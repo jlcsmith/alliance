@@ -126,14 +126,14 @@
         </dependency>
         <dependency>
             <groupId>org.codice.alliance.imaging</groupId>
-            <artifactId>alliance-imaging-app</artifactId>
+            <artifactId>imaging-app</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.codice.alliance.video</groupId>
-            <artifactId>alliance-video-app</artifactId>
+            <artifactId>video-app</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
@@ -220,10 +220,10 @@
                                     mvn:org.codice.alliance.distribution/install-profiles/${project.version}/xml/features
                                 </descriptor>
                                 <descriptor>
-                                    mvn:org.codice.alliance.imaging/alliance-imaging-app/${project.version}/xml/features
+                                    mvn:org.codice.alliance.imaging/imaging-app/${project.version}/xml/features
                                 </descriptor>
                                 <descriptor>
-                                    mvn:org.codice.alliance.video/alliance-video-app/${project.version}/xml/features
+                                    mvn:org.codice.alliance.video/video-app/${project.version}/xml/features
                                 </descriptor>
                                 <descriptor>file:${basedir}/target/classes/alliance-features.xml
                                 </descriptor>
