@@ -66,6 +66,7 @@
         <module>plugin</module>
         <module>video</module>
         <module>security</module>
+        <module>transformer</module>
     </modules>
 
     <build>
