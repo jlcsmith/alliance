@@ -50,7 +50,6 @@ import ddf.test.itests.AbstractIntegrationTest;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class TestAllianceApps extends AbstractIntegrationTest {
-    private static final String[] REQUIRED_APPS = {"catalog-app", "solr-app", "spatial-app"};
 
     private static final String[] APPS =
             {"security-app", "nsili-app", "imaging-app", "video-app"};
@@ -80,7 +79,7 @@ public class TestAllianceApps extends AbstractIntegrationTest {
             basePort = getBasePort();
             getAdminConfig().setLogLevels();
 
-            getServiceManager().waitForRequiredApps(REQUIRED_APPS);
+            getServiceManager().waitForRequiredApps(getDefaultRequiredApps());
             getServiceManager().waitForAllBundles();
             getCatalogBundle().waitForCatalogProvider();
         } catch (Exception e) {
@@ -107,6 +106,7 @@ public class TestAllianceApps extends AbstractIntegrationTest {
                 try {
                     applicationService.startApplication(app);
                 } catch (ApplicationServiceException e) {
+                    LOGGER.error("Failed starting app {}", appName, e);
                     fail(String.format("Failed to start the %s: %s", appName, e.getMessage()));
                 }
                 status = applicationService.getApplicationStatus(app);
