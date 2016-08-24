@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.codice.alliance.catalog.core.api.types.Isr;
+import org.codice.alliance.catalog.core.api.types.Security;
 import org.codice.alliance.catalog.transformer.mgmp.MgmpConstants;
 import org.codice.ddf.spatial.ogc.csw.catalog.common.GmdConstants;
 import org.codice.ddf.spatial.ogc.csw.catalog.converter.AbstractGmdConverter;
@@ -91,24 +92,6 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String ASSOCIATIONS_RELATED_TYPE_TEXT_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/aggregationInfo/MD_AggregateInformation/associationType/DS_AssociationTypeCode";
 
-    public static final String SECURITY_METADATA_CLASSIFICATION_ATTRIBUTE =
-            "ext.security.metadata-classification";
-
-    public static final String SECURITY_METADATA_RELEASABILITY_ATTRIBUTE =
-            "ext.security.metadata-releasability";
-
-    public static final String SECURITY_RESOURCE_CLASSIFICATION_ATTRIBUTE =
-            "ext.security.resource-classification";
-
-    public static final String SECURITY_METADATA_DISSEMINATION_ATTRIBUTE =
-            "ext.security.metadata-dissemination-controls";
-
-    public static final String SECURITY_METADATA_ORIGINATOR_CLASSIFICATION =
-            "ext.security.metadata-originator-classification";
-
-    public static final String SECURITY_RESOURCE_ORIGINATOR_CLASSIFICATION =
-            "ext.security.resource-originator-classification";
-
     public static final String METATADA_SECURITY_CODE_LIST_PATH =
             "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeList";
 
@@ -117,10 +100,6 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     public static final String SECURITY_RESOURCE_DISSEMINATION =
             "ext.security.resource-dissemination-controls";
-
-    public static final String RESOURCE_RATING_SYSTEM = "ext.resource-rating-system";
-
-    public static final String RESOURCE_RATING = "ext.resource-rating";
 
     public static final String GMD_POLYGON_GMLID = "GMLID_eea1bec0-9aaf-11e5-9cdf-0002a5d5c51b";
 
@@ -131,9 +110,8 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     public static final String GMD_NAMESPACE_PATH = "/MD_Metadata/@xmlns";
 
-    public static final String GCO_PREFIX = "gco";
-
-    public static final String GCO_NAMESPACE_PATH = "/MD_Metadata/@xmlns:" + GCO_PREFIX;
+    public static final String GCO_NAMESPACE_PATH =
+            "/MD_Metadata/@xmlns:" + GmdConstants.GCO_PREFIX;
 
     public static final String MGMP_NAMESPACE_PATH = "/MD_Metadata/@xmlns:mgmp";
 
@@ -203,6 +181,12 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String
             CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_ATTRIBUTE_REASON_PATH =
             "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/attributeDescription/@gco:nilReason";
+
+    public static final String RESOURCE_RATING_CODE_SPACE_PATH =
+            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/imageQualityCode/RS_Identifier/codeSpace/gco:CharacterString";
+
+    public static final String RESOURCE_RATING_CODE_PATH =
+            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/imageQualityCode/RS_Identifier/code/gco:CharacterString";
 
     private static final String INDEX_TAG = "%index%";
 
@@ -336,14 +320,6 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String GMD_CRS_CODE_PATH = "/MD_Metadata/referenceSystemInfo[" + INDEX_TAG
             + "]/MD_ReferenceSystem/referenceSystemIdentifier/RS_Identifier/code/gco:CharacterString";
 
-    public static final String RESOURCE_RATING_CODE_SPACE_PATH =
-            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/imageQualityCode[" + INDEX_TAG
-                    + "]/RS_Identifier/codeSpace/gco:CharacterString";
-
-    public static final String RESOURCE_RATING_CODE_PATH =
-            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/imageQualityCode[" + INDEX_TAG
-                    + "]/RS_Identifier/code/gco:CharacterString";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(MgmpConverter.class);
 
     private static final int MIN_CLOUD_COVERAGE = 0;
@@ -466,7 +442,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
-                SECURITY_RESOURCE_ORIGINATOR_CLASSIFICATION,
+                Security.RESOURCE_ORIGINATOR_CLASSIFICATION,
                 MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
@@ -546,7 +522,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
-                SECURITY_METADATA_ORIGINATOR_CLASSIFICATION,
+                Security.METADATA_ORIGINATOR_CLASSIFICATION,
                 MgmpConstants.METADATA_ORIGINATOR_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH),
@@ -979,10 +955,8 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private void addMetadataReleasability(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
-        Attribute releasibilityAttribute = metacard.getAttribute(
-                SECURITY_METADATA_RELEASABILITY_ATTRIBUTE);
-        Attribute disseminationAttribute = metacard.getAttribute(
-                SECURITY_METADATA_DISSEMINATION_ATTRIBUTE);
+        Attribute releasibilityAttribute = metacard.getAttribute(Security.METADATA_RELEASABILITY);
+        Attribute disseminationAttribute = metacard.getAttribute(Security.METADATA_DISSEMINATION);
 
         if (isReleasabilityAndDisseminationSet(releasibilityAttribute, disseminationAttribute)) {
 
@@ -1025,7 +999,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             MetacardImpl metacard) {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
-                SECURITY_RESOURCE_CLASSIFICATION_ATTRIBUTE,
+                Security.RESOURCE_CLASSIFICATION,
                 MgmpConstants.RESOURCE_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(RESOURCE_SECURITY_CODE_LIST_PATH),
@@ -1037,7 +1011,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             MetacardImpl metacard) {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
-                SECURITY_METADATA_CLASSIFICATION_ATTRIBUTE,
+                Security.METADATA_CLASSIFICATION,
                 MgmpConstants.METADATA_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(METATADA_SECURITY_CODE_LIST_PATH),
@@ -1057,22 +1031,12 @@ public class MgmpConverter extends AbstractGmdConverter {
 
         boolean isCloudCoverageAvailable = cloudCoverage.isPresent();
 
-        List<Serializable> resourceRatings = Utilities.getSerializables(metacard, RESOURCE_RATING);
-        List<Serializable> resourceRatingSystems = Utilities.getSerializables(metacard,
-                RESOURCE_RATING_SYSTEM);
-
-        boolean doesResourceRatingsMatch = resourceRatings.size() == resourceRatingSystems.size();
-
-        boolean isResourceRatingsAvailable =
-                resourceRatings.size() == 1 && doesResourceRatingsMatch;
-
         List<Serializable> ratingScaleValues = Utilities.getSerializables(metacard,
                 Isr.NATIONAL_IMAGERY_INTERPRETABILITY_RATING_SCALE);
 
         boolean isRatingScaleValuesAvailable = ratingScaleValues.size() == 1;
 
-        if (isCloudCoverageAvailable || isResourceRatingsAvailable
-                || isRatingScaleValuesAvailable) {
+        if (isCloudCoverageAvailable || isRatingScaleValuesAvailable) {
 
             List<String> attributeDescription = Stream.of(metacard.getAttribute(Isr.COMMENTS))
                     .flatMap(attribute -> attribute.getValues()
@@ -1099,38 +1063,15 @@ public class MgmpConverter extends AbstractGmdConverter {
             pathValueTracker.add(new Path(MgmpConstants.ISR_IMAGE_DESCRIPTION_PATH), "image");
         }
 
-        if (metacard.getAttribute(RESOURCE_RATING) != null && metacard.getAttribute(
-                RESOURCE_RATING_SYSTEM) != null &&
-                metacard.getAttribute(RESOURCE_RATING)
-                        .getValues()
-                        .size() == metacard.getAttribute(RESOURCE_RATING_SYSTEM)
-                        .getValues()
-                        .size()) {
-
-            Utilities.addMultiValues(pathValueTracker,
-                    resourceRatings.stream()
-                            .map(Object::toString)
-                            .collect(Collectors.toList()),
-                    RESOURCE_RATING_CODE_PATH);
-
-            Utilities.addMultiValues(pathValueTracker,
-                    resourceRatingSystems.stream()
-                            .map(Object::toString)
-                            .collect(Collectors.toList()),
-                    RESOURCE_RATING_CODE_SPACE_PATH);
-        } else {
-
-            // TODO needs testing
-
-            if (!ratingScaleValues.isEmpty()) {
-                ratingScaleValues.stream()
-                        .map(Object::toString)
-                        .findFirst()
-                        .ifPresent(value -> {
-                            pathValueTracker.add(new Path(RESOURCE_RATING_CODE_SPACE_PATH), value);
-                            pathValueTracker.add(new Path(RESOURCE_RATING_CODE_PATH), "NIIRS");
-                        });
-            }
+        if (!ratingScaleValues.isEmpty()) {
+            ratingScaleValues.stream()
+                    .map(Object::toString)
+                    .findFirst()
+                    .ifPresent(value -> {
+                        pathValueTracker.add(new Path(MgmpConstants.NIIRS_RATING_PATH),
+                                MgmpConstants.NIIRS);
+                        pathValueTracker.add(new Path(MgmpConstants.NIIRS_PATH), value);
+                    });
 
         }
 
