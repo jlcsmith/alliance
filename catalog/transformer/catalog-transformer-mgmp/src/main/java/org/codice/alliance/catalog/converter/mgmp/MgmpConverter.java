@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -32,6 +33,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.codice.alliance.catalog.core.api.types.Isr;
+import org.codice.alliance.catalog.transformer.mgmp.MgmpConstants;
+import org.codice.ddf.spatial.ogc.csw.catalog.common.GmdConstants;
 import org.codice.ddf.spatial.ogc.csw.catalog.converter.AbstractGmdConverter;
 import org.codice.ddf.spatial.ogc.csw.catalog.converter.XstreamPathValueTracker;
 import org.slf4j.Logger;
@@ -58,26 +61,14 @@ import ddf.catalog.data.types.Topic;
  */
 public class MgmpConverter extends AbstractGmdConverter {
 
-    public static final String RESOURCE_SECURITY_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeListValue";
-
     public static final String RESOURCE_SECURITY_CODE_LIST_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeList";
-
-    public static final String RESOURCE_SECURITY_RELEASABILITY_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:caveat/gco:CharacterString";
-
-    public static final String RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_VALUE_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeListValue";
 
     public static final String RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeList";
 
     public static final String RESOURCE_STATUS_CODE_LIST_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/status/MD_ProgressCode/@codeList";
-
-    public static final String GMD_MAX_ALTITUDE_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/verticalElement/EX_VerticalExtent/maximumValue/gco:Real";
 
     public static final String GMD_MIN_ALTITUDE_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/verticalElement/EX_VerticalExtent/minimumValue/gco:Real";
@@ -87,9 +78,6 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     public static final String GMD_VERTICAL_CRS_XLINK_TITLE_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/verticalElement/EX_VerticalExtent/verticalCRS/@xlink:title";
-
-    public static final String GMD_ASSOCIATION_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/aggregationInfo/MD_AggregateInformation/aggregateDataSetIdentifier/RS_Identifier/code/gco:CharacterString";
 
     public static final String ASSOCIATIONS_RELATED_CODE_SPACE_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/aggregationInfo/MD_AggregateInformation/aggregateDataSetIdentifier/RS_Identifier/codeSpace/gco:CharacterString";
@@ -102,15 +90,6 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     public static final String ASSOCIATIONS_RELATED_TYPE_TEXT_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/aggregationInfo/MD_AggregateInformation/associationType/DS_AssociationTypeCode";
-
-    public static final String RESOURCE_STATUS_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/status/MD_ProgressCode/@codeListValue";
-
-    public static final String ABSTRACT_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/abstract/gco:CharacterString";
-
-    public static final String TITLE_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/title/gco:CharacterString";
 
     public static final String SECURITY_METADATA_CLASSIFICATION_ATTRIBUTE =
             "ext.security.metadata-classification";
@@ -130,17 +109,8 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String SECURITY_RESOURCE_ORIGINATOR_CLASSIFICATION =
             "ext.security.resource-originator-classification";
 
-    public static final String METATADA_SECURITY_PATH =
-            "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeListValue";
-
     public static final String METATADA_SECURITY_CODE_LIST_PATH =
             "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeList";
-
-    public static final String METADATA_SECURITY_RELEASABILITY_PATH =
-            "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/mgmp:caveat/gco:CharacterString";
-
-    public static final String METADATA_ORIGINATOR_SECURITY_PATH =
-            "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeListValue";
 
     public static final String METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH =
             "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeList";
@@ -202,9 +172,6 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String CONTACT_ROLE_TEXT_PATH =
             "/MD_Metadata/contact/CI_ResponsibleParty/role/CI_RoleCode";
 
-    public static final String GMD_CONTACT_ORGANISATION_PATH =
-            "/MD_Metadata/contact/CI_ResponsibleParty/organisationName/gco:CharacterString";
-
     public static final String LANGUAGE_CODE_LIST =
             "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode";
 
@@ -213,30 +180,6 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String GMD_NAMESPACE = "http://www.isotc211.org/2005/gmd";
 
     public static final String GCO_NAMESPACE = "http://www.isotc211.org/2005/gco";
-
-    public static final String RESOURCE_STATUS = "ext.resource-status";
-
-    public static final String DATE_TIME_STAMP_PATH = "/MD_Metadata/dateStamp/gco:DateTime";
-
-    public static final String LINKAGE_URI_PATH =
-            "/MD_Metadata/distributionInfo/MD_Distribution/transferOptions/MD_DigitalTransferOptions/onLine/CI_OnlineResource/linkage/URL";
-
-    public static final String FORMAT_PATH =
-            "/MD_Metadata/distributionInfo/MD_Distribution/distributionFormat/MD_Format/name/gco:CharacterString";
-
-    public static final String FORMAT_VERSION_PATH =
-            "/MD_Metadata/distributionInfo/MD_Distribution/distributionFormat/MD_Format/version/gco:CharacterString";
-
-    public static final String FILE_IDENTIFIER_PATH =
-            "/MD_Metadata/fileIdentifier/gco:CharacterString";
-
-    public static final String CODE_LIST_VALUE_PATH =
-            "/MD_Metadata/hierarchyLevel/MD_ScopeCode/@codeListValue";
-
-    public static final String CODE_LIST_PATH =
-            "/MD_Metadata/hierarchyLevel/MD_ScopeCode/@codeList";
-
-    public static final String GMD_LOCAL_NAME = "MD_Metadata";
 
     public static final String POINT_OF_CONTACT_ROLE_CODE_LIST_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/pointOfContact/CI_ResponsibleParty/role/CI_RoleCode/@codeList";
@@ -247,14 +190,7 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String POINT_OF_CONTACT_ROLE_TEXT_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/pointOfContact/CI_ResponsibleParty/role/CI_RoleCode";
 
-    public static final String CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_PATH =
-            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/cloudCoverPercentage/gco:Real";
-
     public static final String BOUNDING_BOX_FORMAT = "%.15f";
-
-    public static final String
-            CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_ATTRIBUTE_DESC_PATH =
-            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/attributeDescription/gco:RecordType";
 
     public static final String
             CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_CONTENT_TYPE_TEXT_PATH =
@@ -263,10 +199,6 @@ public class MgmpConverter extends AbstractGmdConverter {
     public static final String
             CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_CONTENT_TYPE_CODE_LIST_PATH =
             "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/contentType/MD_CoverageContentTypeCode/@codeList";
-
-    public static final String
-            CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_CONTENT_TYPE_CODE_LIST_VALUE_PATH =
-            "/MD_Metadata/contentInfo/mgmp:MGMP_ImageDescription/contentType/MD_CoverageContentTypeCode/@codeListValue";
 
     public static final String
             CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_ATTRIBUTE_REASON_PATH =
@@ -450,7 +382,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     @Override
     protected List<String> getXstreamAliases() {
-        return Arrays.asList(GMD_LOCAL_NAME, GMD_METACARD_TYPE_NAME);
+        return Arrays.asList(GmdConstants.GMD_LOCAL_NAME, GMD_METACARD_TYPE_NAME);
     }
 
     /**
@@ -535,7 +467,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 SECURITY_RESOURCE_ORIGINATOR_CLASSIFICATION,
-                RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_VALUE_PATH,
+                MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
                             "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ClassificationCode");
@@ -556,11 +488,13 @@ public class MgmpConverter extends AbstractGmdConverter {
         List<String> languageCodes = Utilities.getValues(metacard, Core.LANGUAGE);
 
         if (languageCodes.isEmpty()) {
-            languageCodes = Collections.singletonList("eng");
+            languageCodes = Collections.singletonList(Locale.ENGLISH.getISO3Language());
         }
 
         List<String> languageTexts = languageCodes.stream()
-                .map(code -> code.equals("eng") ? "English" : "")
+                .map(code -> code.equals(Locale.ENGLISH.getISO3Language()) ?
+                        Locale.ENGLISH.getDisplayLanguage() :
+                        "")
                 .collect(Collectors.toList());
 
         List<String> languageCodeList = Utilities.replace(languageCodes, LANGUAGE_CODE_LIST);
@@ -613,7 +547,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 SECURITY_METADATA_ORIGINATOR_CLASSIFICATION,
-                METADATA_ORIGINATOR_SECURITY_PATH,
+                MgmpConstants.METADATA_ORIGINATOR_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH),
                             "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ClassificationUK_GovCode");
@@ -706,9 +640,9 @@ public class MgmpConverter extends AbstractGmdConverter {
                             addBoundingBoxElement(pathValueTracker,
                                     NORTH_BOUND_LATITUDE_PATH,
                                     northBoundLatitude);
-                        }
 
-                        geographicElementIndex++;
+                            geographicElementIndex++;
+                        }
 
                     } catch (ParseException e) {
                         LOGGER.debug("unable to set location", e);
@@ -742,8 +676,8 @@ public class MgmpConverter extends AbstractGmdConverter {
             MetacardImpl metacard) {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
-                RESOURCE_STATUS,
-                RESOURCE_STATUS_PATH,
+                GmdConstants.RESOURCE_STATUS,
+                GmdConstants.RESOURCE_STATUS_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(RESOURCE_STATUS_CODE_LIST_PATH),
                             "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ProgressCode");
@@ -813,11 +747,11 @@ public class MgmpConverter extends AbstractGmdConverter {
                 return Optional.of(Double.toString(optionalDouble.getAsDouble()));
             }
             return Optional.empty();
-        }, GMD_MAX_ALTITUDE_PATH);
+        }, GmdConstants.ALTITUDE_PATH);
 
         if (addVerticalCRS.get()) {
             pathValueTracker.add(new Path(GMD_VERTICAL_CRS_XLINK_HREF_PATH),
-                    "http://ww.opengis.net/def/crs/EPSG/0/5701");
+                    "http://www.opengis.net/def/crs/EPSG/0/5701");
             pathValueTracker.add(new Path(GMD_VERTICAL_CRS_XLINK_TITLE_PATH), "Newlyn Height");
         }
     }
@@ -831,7 +765,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private void addCreatedDateExtra(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
-        addDateTypeCode(pathValueTracker, "creation", "Creation");
+        addDateTypeCode(pathValueTracker, GmdConstants.CREATION, "Creation");
         dateElementIndex++;
     }
 
@@ -845,7 +779,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private void addExpirationDateExtra(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
-        addDateTypeCode(pathValueTracker, "expiry", "Expiry");
+        addDateTypeCode(pathValueTracker, GmdConstants.EXPIRY, "Expiry");
         dateElementIndex++;
     }
 
@@ -868,7 +802,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private void addModifiedDateExtra(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
-        addDateTypeCode(pathValueTracker, "lastUpdated", "LastUpdated");
+        addDateTypeCode(pathValueTracker, GmdConstants.LAST_UPDATE, "LastUpdate");
         dateElementIndex++;
     }
 
@@ -881,7 +815,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                 modified :
                 (created.isPresent() ? created : Optional.empty());
 
-        date.ifPresent(date1 -> pathValueTracker.add(new Path(DATE_TIME_STAMP_PATH),
+        date.ifPresent(date1 -> pathValueTracker.add(new Path(GmdConstants.DATE_TIME_STAMP_PATH),
                 Utilities.dateToIso8601(date1)));
     }
 
@@ -916,7 +850,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 Contact.PUBLISHER_NAME,
-                GMD_CONTACT_ORGANISATION_PATH);
+                GmdConstants.CONTACT_ORGANISATION_PATH);
 
         Utilities.addMultiValues(pathValueTracker,
                 Utilities.getValues(metacard, Contact.PUBLISHER_PHONE),
@@ -943,7 +877,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             return Optional.ofNullable(metacard1.getResourceURI())
                     .filter(Objects::nonNull)
                     .map(URI::toString);
-        }, LINKAGE_URI_PATH);
+        }, GmdConstants.LINKAGE_URI_PATH);
     }
 
     private String formatId(String id) {
@@ -970,7 +904,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                             .map(String.class::cast)
                             .map(this::formatId);
                 },
-                GMD_ASSOCIATION_PATH,
+                GmdConstants.ASSOCIATION_PATH,
                 this::addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra);
     }
 
@@ -1000,22 +934,28 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private void addGmdMetacardFormat(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker, metacard, Media.FORMAT, FORMAT_PATH);
+        Utilities.addFieldIfString(pathValueTracker,
+                metacard,
+                Media.FORMAT,
+                GmdConstants.FORMAT_PATH);
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 Media.FORMAT_VERSION,
-                FORMAT_VERSION_PATH);
+                GmdConstants.FORMAT_VERSION_PATH);
     }
 
     private void addMdIdentificationAbstract(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker, metacard, Core.DESCRIPTION, ABSTRACT_PATH);
+        Utilities.addFieldIfString(pathValueTracker,
+                metacard,
+                Core.DESCRIPTION,
+                GmdConstants.ABSTRACT_PATH);
     }
 
     private void addGmdTitle(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
         Utilities.addFieldIfString(pathValueTracker, metacard, metacard1 -> {
             return Optional.of(StringUtils.defaultString(metacard1.getTitle()));
-        }, TITLE_PATH);
+        }, GmdConstants.TITLE_PATH);
     }
 
     private void addFileIdentifier(XstreamPathValueTracker pathValueTracker,
@@ -1023,18 +963,18 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker, metacard, metacard1 -> {
             return Optional.of(StringUtils.defaultString(metacard1.getId()))
                     .map(this::formatId);
-        }, FILE_IDENTIFIER_PATH);
+        }, GmdConstants.FILE_IDENTIFIER_PATH);
     }
 
     private void addHierarchyLevel(XstreamPathValueTracker pathValueTracker) {
-        pathValueTracker.add(new Path(CODE_LIST_VALUE_PATH), "dataset");
-        pathValueTracker.add(new Path(CODE_LIST_PATH),
+        pathValueTracker.add(new Path(GmdConstants.CODE_LIST_VALUE_PATH), "dataset");
+        pathValueTracker.add(new Path(GmdConstants.CODE_LIST_PATH),
                 "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ScopeCode");
     }
 
     @Override
     protected String getRootNodeName() {
-        return GMD_LOCAL_NAME;
+        return GmdConstants.GMD_LOCAL_NAME;
     }
 
     private void addMetadataReleasability(XstreamPathValueTracker pathValueTracker,
@@ -1049,7 +989,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             String value = disseminationAttribute.getValue()
                     .toString() + " " + Utilities.join(releasibilityAttribute.getValues(), "/");
 
-            pathValueTracker.add(new Path(METADATA_SECURITY_RELEASABILITY_PATH), value);
+            pathValueTracker.add(new Path(MgmpConstants.METADATA_RELEASABILITY_PATH), value);
 
         }
 
@@ -1075,7 +1015,8 @@ public class MgmpConverter extends AbstractGmdConverter {
             String value = disseminationAttribute.getValue()
                     .toString() + " " + Utilities.join(releasibilityAttribute.getValues(), "/");
 
-            pathValueTracker.add(new Path(RESOURCE_SECURITY_RELEASABILITY_PATH), value);
+            pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_RELEASABILITY_PATH),
+                    value);
 
         }
     }
@@ -1085,7 +1026,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 SECURITY_RESOURCE_CLASSIFICATION_ATTRIBUTE,
-                RESOURCE_SECURITY_PATH,
+                MgmpConstants.RESOURCE_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(RESOURCE_SECURITY_CODE_LIST_PATH),
                             CLASSIFICATION_CODE);
@@ -1097,7 +1038,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 SECURITY_METADATA_CLASSIFICATION_ATTRIBUTE,
-                METATADA_SECURITY_PATH,
+                MgmpConstants.METADATA_SECURITY_PATH,
                 (pathValueTracker1, metacard1) -> {
                     pathValueTracker1.add(new Path(METATADA_SECURITY_CODE_LIST_PATH),
                             CLASSIFICATION_CODE);
@@ -1145,8 +1086,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                                 CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_ATTRIBUTE_REASON_PATH),
                         "unknown");
             } else {
-                pathValueTracker.add(new Path(
-                                CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_ATTRIBUTE_DESC_PATH),
+                pathValueTracker.add(new Path(MgmpConstants.ISR_IMAGE_COMMENT_PATH),
                         attributeDescription.get(0));
             }
 
@@ -1156,9 +1096,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             pathValueTracker.add(new Path(
                             CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_CONTENT_TYPE_CODE_LIST_PATH),
                     "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_CoverageContentTypeCode");
-            pathValueTracker.add(new Path(
-                            CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_CONTENT_TYPE_CODE_LIST_VALUE_PATH),
-                    "image");
+            pathValueTracker.add(new Path(MgmpConstants.ISR_IMAGE_DESCRIPTION_PATH), "image");
         }
 
         if (metacard.getAttribute(RESOURCE_RATING) != null && metacard.getAttribute(
@@ -1199,7 +1137,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Utilities.addFieldIfString(pathValueTracker,
                 metacard,
                 metacard1 -> cloudCoverage,
-                CONTENT_INFO_MGMP_IMAGE_DESCRIPTION_CLOUD_COVERAGE_PATH);
+                MgmpConstants.CLOUD_COVERAGE_PATH);
     }
 
     private static class Utilities {
