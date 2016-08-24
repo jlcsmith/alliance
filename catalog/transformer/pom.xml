@@ -25,6 +25,5 @@
     <name>Alliance :: Transformer</name>
     <modules>
         <module>catalog-transformer-mgmp</module>
-        <module>catalog-transformer-mgmpv2</module>
     </modules>
 </project>
