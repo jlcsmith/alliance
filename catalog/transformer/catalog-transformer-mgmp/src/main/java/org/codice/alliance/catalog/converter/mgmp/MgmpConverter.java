@@ -818,7 +818,6 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private List<String> getDateStrings(String attributeName) {
         return getSerializables(attributeName).stream()
-                .filter(Objects::nonNull)
                 .filter(Date.class::isInstance)
                 .map(Date.class::cast)
                 .map(this::dateToIso8601)
