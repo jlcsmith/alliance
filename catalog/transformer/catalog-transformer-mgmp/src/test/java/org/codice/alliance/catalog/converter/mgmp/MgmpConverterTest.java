@@ -37,6 +37,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codice.alliance.catalog.core.api.impl.types.IsrAttributes;
 import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.catalog.core.api.types.Security;
+import org.codice.alliance.catalog.transformer.mgmp.MgmpConstants;
 import org.codice.ddf.spatial.ogc.csw.catalog.common.GmdConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,11 +135,11 @@ public class MgmpConverterTest {
         metacard.setAttribute(Core.DESCRIPTION, "this is the description string");
         metacard.setTitle("theTitle");
         metacard.setContentTypeName("text/plain");
-        metacard.setAttribute(Security.METADATA_DISSEMINATION, "Releasable to");
+        metacard.setAttribute(Security.METADATA_DISSEMINATION, MgmpConstants.RELEASABLE_TO);
         metacard.setAttribute(Security.METADATA_RELEASABILITY,
                 (Serializable) Arrays.asList("USA", "AUS"));
-        metacard.setAttribute(MgmpConverter.SECURITY_RESOURCE_DISSEMINATION, "Releasable to");
-        metacard.setAttribute(MgmpConverter.SECURITY_RESOURCE_RELEASABILITY,
+        metacard.setAttribute(MgmpConstants.SECURITY_RESOURCE_DISSEMINATION, "Releasable to");
+        metacard.setAttribute(MgmpConstants.SECURITY_RESOURCE_RELEASABILITY,
                 (Serializable) Arrays.asList("USA", "AUS"));
         metacard.setAttribute(Security.RESOURCE_CLASSIFICATION, "secret");
         metacard.setAttribute(Security.METADATA_CLASSIFICATION, "secret");
@@ -186,142 +187,135 @@ public class MgmpConverterTest {
 
                 schemaLocations = new HashMap<>();
 
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE, "gmd.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "gmd.xsd"),
                         "/schemas/iso/19139/20070417/gmd/gmd.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "metadataEntity.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "metadataEntity.xsd"),
                         "/schemas/iso/19139/20070417/gmd/metadataEntity.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "metadataApplication.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "metadataApplication.xsd"),
                         "/schemas/iso/19139/20070417/gmd/metadataApplication.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "spatialRepresentation.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "spatialRepresentation.xsd"),
                         "/schemas/iso/19139/20070417/gmd/spatialRepresentation.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE, "citation.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "citation.xsd"),
                         "/schemas/iso/19139/20070417/gmd/citation.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "referenceSystem.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "referenceSystem.xsd"),
                         "/schemas/iso/19139/20070417/gmd/referenceSystem.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE, "extent.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "extent.xsd"),
                         "/schemas/iso/19139/20070417/gmd/extent.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "metadataExtension.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "metadataExtension.xsd"),
                         "/schemas/iso/19139/20070417/gmd/metadataExtension.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE, "content.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "content.xsd"),
                         "/schemas/iso/19139/20070417/gmd/content.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "applicationSchema.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "applicationSchema.xsd"),
                         "/schemas/iso/19139/20070417/gmd/applicationSchema.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "portrayalCatalogue.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "portrayalCatalogue.xsd"),
                         "/schemas/iso/19139/20070417/gmd/portrayalCatalogue.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                        "dataQuality.xsd"), "/schemas/iso/19139/20070417/gmd/dataQuality.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                                "identification.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "dataQuality.xsd"),
+                        "/schemas/iso/19139/20070417/gmd/dataQuality.xsd");
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "identification.xsd"),
                         "/schemas/iso/19139/20070417/gmd/identification.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                        "constraints.xsd"), "/schemas/iso/19139/20070417/gmd/constraints.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                        "distribution.xsd"), "/schemas/iso/19139/20070417/gmd/distribution.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE,
-                        "maintenance.xsd"), "/schemas/iso/19139/20070417/gmd/maintenance.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GMD_NAMESPACE, "freeText.xsd"),
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "constraints.xsd"),
+                        "/schemas/iso/19139/20070417/gmd/constraints.xsd");
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "distribution.xsd"),
+                        "/schemas/iso/19139/20070417/gmd/distribution.xsd");
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "maintenance.xsd"),
+                        "/schemas/iso/19139/20070417/gmd/maintenance.xsd");
+                schemaLocations.put(pair(GmdConstants.GMD_NAMESPACE, "freeText.xsd"),
                         "/schemas/iso/19139/20070417/gmd/freeText.xsd");
 
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GCO_NAMESPACE, "gco.xsd"),
+                schemaLocations.put(pair(GmdConstants.GCO_NAMESPACE, "gco.xsd"),
                         "/schemas/iso/19139/20070417/gco/gco.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GCO_NAMESPACE, "gcoBase.xsd"),
+                schemaLocations.put(pair(GmdConstants.GCO_NAMESPACE, "gcoBase.xsd"),
                         "/schemas/iso/19139/20070417/gco/gcoBase.xsd");
-                schemaLocations.put(new ImmutablePair<>(GmdConstants.GCO_NAMESPACE,
-                        "basicTypes.xsd"), "/schemas/iso/19139/20070417/gco/basicTypes.xsd");
+                schemaLocations.put(pair(GmdConstants.GCO_NAMESPACE, "basicTypes.xsd"),
+                        "/schemas/iso/19139/20070417/gco/basicTypes.xsd");
 
-                schemaLocations.put(new ImmutablePair<>("http://www.w3.org/1999/xlink",
-                        "xlink.xsd"), "/schemas/xlink/xlink.xsd");
-                schemaLocations.put(new ImmutablePair<>("http://www.w3.org/XML/1998/namespace",
-                        "xml.xsd"), "/schemas/xml/2001/xml.xsd");
+                schemaLocations.put(pair("http://www.w3.org/1999/xlink", "xlink.xsd"),
+                        "/schemas/xlink/xlink.xsd");
+                schemaLocations.put(pair("http://www.w3.org/XML/1998/namespace", "xml.xsd"),
+                        "/schemas/xml/2001/xml.xsd");
 
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "feature.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "feature.xsd"),
                         "/schemas/gml/3.2.1/feature.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "geometryAggregates.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "geometryAggregates.xsd"),
                         "/schemas/gml/3.2.1/geometryAggregates.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "geometryPrimitives.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "geometryPrimitives.xsd"),
                         "/schemas/gml/3.2.1/geometryPrimitives.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "geometryBasic2d.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "geometryBasic2d.xsd"),
                         "/schemas/gml/3.2.1/geometryBasic2d.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "geometryBasic0d1d.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "geometryBasic0d1d.xsd"),
                         "/schemas/gml/3.2.1/geometryBasic0d1d.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "measures.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "measures.xsd"),
                         "/schemas/gml/3.2.1/measures.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "units.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "units.xsd"),
                         "/schemas/gml/3.2.1/units.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "dictionary.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "dictionary.xsd"),
                         "/schemas/gml/3.2.1/dictionary.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "gmlBase.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "gmlBase.xsd"),
                         "/schemas/gml/3.2.1/gmlBase.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "gml.xsd"),
-                        "/schemas/gml/3.2.1/gml.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "dynamicFeature.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "gml.xsd"), "/schemas/gml/3.2.1/gml.xsd");
+                schemaLocations.put(pair(GML_NAMESPACE, "dynamicFeature.xsd"),
                         "/schemas/gml/3.2.1/dynamicFeature.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "temporal.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "temporal.xsd"),
                         "/schemas/gml/3.2.1/temporal.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "direction.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "direction.xsd"),
                         "/schemas/gml/3.2.1/direction.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "topology.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "topology.xsd"),
                         "/schemas/gml/3.2.1/topology.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "geometryComplexes.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "geometryComplexes.xsd"),
                         "/schemas/gml/3.2.1/geometryComplexes.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "coverage.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "coverage.xsd"),
                         "/schemas/gml/3.2.1/coverage.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "valueObjects.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "valueObjects.xsd"),
                         "/schemas/gml/3.2.1/valueObjects.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "grids.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "grids.xsd"),
                         "/schemas/gml/3.2.1/grids.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE,
-                                "coordinateReferenceSystems.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "coordinateReferenceSystems.xsd"),
                         "/schemas/gml/3.2.1/coordinateReferenceSystems.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "coordinateSystems.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "coordinateSystems.xsd"),
                         "/schemas/gml/3.2.1/coordinateSystems.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "referenceSystems.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "referenceSystems.xsd"),
                         "/schemas/gml/3.2.1/referenceSystems.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "datums.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "datums.xsd"),
                         "/schemas/gml/3.2.1/datums.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "coordinateOperations.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "coordinateOperations.xsd"),
                         "/schemas/gml/3.2.1/coordinateOperations.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "observation.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "observation.xsd"),
                         "/schemas/gml/3.2.1/observation.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE,
-                                "temporalReferenceSystems.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "temporalReferenceSystems.xsd"),
                         "/schemas/gml/3.2.1/temporalReferenceSystems.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "temporalTopology.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "temporalTopology.xsd"),
                         "/schemas/gml/3.2.1/temporalTopology.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "deprecatedTypes.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "deprecatedTypes.xsd"),
                         "/schemas/gml/3.2.1/deprecatedTypes.xsd");
-                schemaLocations.put(new ImmutablePair<>(GML_NAMESPACE, "basicTypes.xsd"),
+                schemaLocations.put(pair(GML_NAMESPACE, "basicTypes.xsd"),
                         "/schemas/gml/3.2.1/basicTypes.xsd");
 
-                schemaLocations.put(new ImmutablePair<>(GSS_NAMESPACE, "gss.xsd"),
+                schemaLocations.put(pair(GSS_NAMESPACE, "gss.xsd"),
                         "/schemas/iso/19139/20070417/gss/gss.xsd");
-                schemaLocations.put(new ImmutablePair<>(GSS_NAMESPACE, "geometry.xsd"),
+                schemaLocations.put(pair(GSS_NAMESPACE, "geometry.xsd"),
                         "/schemas/iso/19139/20070417/gss/geometry.xsd");
 
-                schemaLocations.put(new ImmutablePair<>(GTS_NAMESPACE, "gts.xsd"),
+                schemaLocations.put(pair(GTS_NAMESPACE, "gts.xsd"),
                         "/schemas/iso/19139/20070417/gts/gts.xsd");
-                schemaLocations.put(new ImmutablePair<>(GTS_NAMESPACE, "temporalObjects.xsd"),
+                schemaLocations.put(pair(GTS_NAMESPACE, "temporalObjects.xsd"),
                         "/schemas/iso/19139/20070417/gts/temporalObjects.xsd");
 
-                schemaLocations.put(new ImmutablePair<>(GSR_NAMESPACE, "gsr.xsd"),
+                schemaLocations.put(pair(GSR_NAMESPACE, "gsr.xsd"),
                         "/schemas/iso/19139/20070417/gsr/gsr.xsd");
-                schemaLocations.put(new ImmutablePair<>(GSR_NAMESPACE, "spatialReferencing.xsd"),
+                schemaLocations.put(pair(GSR_NAMESPACE, "spatialReferencing.xsd"),
                         "/schemas/iso/19139/20070417/gsr/spatialReferencing.xsd");
 
-                schemaLocations.put(new ImmutablePair<>(SRV_NAMESPACE, "srv.xsd"),
+                schemaLocations.put(pair(SRV_NAMESPACE, "srv.xsd"),
                         "/schemas/iso/19139/20060504/srv/srv.xsd");
-                schemaLocations.put(new ImmutablePair<>(SRV_NAMESPACE, "serviceMetadata.xsd"),
+                schemaLocations.put(pair(SRV_NAMESPACE, "serviceMetadata.xsd"),
                         "/schemas/iso/19139/20060504/srv/serviceMetadata.xsd");
-                schemaLocations.put(new ImmutablePair<>(SRV_NAMESPACE, "serviceModel.xsd"),
+                schemaLocations.put(pair(SRV_NAMESPACE, "serviceModel.xsd"),
                         "/schemas/iso/19139/20060504/srv/serviceModel.xsd");
 
+            }
+
+            private ImmutablePair<String, String> pair(String namespace, String resource) {
+                return new ImmutablePair<>(namespace, resource);
             }
 
             @Override
@@ -330,7 +324,7 @@ public class MgmpConverterTest {
 
                 String fileName = new java.io.File(systemId).getName();
 
-                Pair<String, String> key = new ImmutablePair<>(namespaceURI, fileName);
+                Pair<String, String> key = pair(namespaceURI, fileName);
 
                 if (inputs.containsKey(key)) {
                     return inputs.get(key);
@@ -356,7 +350,7 @@ public class MgmpConverterTest {
             schema.newValidator()
                     .validate(new StreamSource(new StringReader(stringWriter.toString())));
         } catch (SAXException | IOException e) {
-            fail("Generated MGMPv2 Response does not conform to Schema" + e.getMessage());
+            fail("Generated MGMPv2 Response does not conform to Schema: " + e.getMessage());
         }
 
     }
