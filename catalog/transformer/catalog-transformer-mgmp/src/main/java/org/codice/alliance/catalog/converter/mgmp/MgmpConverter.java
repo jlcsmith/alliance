@@ -26,8 +26,6 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -116,6 +114,10 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private Supplier<String> gmlIdSupplier = this::generateGmlGuid;
 
+    private XstreamPathValueTracker pathValueTracker;
+
+    private MetacardImpl metacard;
+
     @Override
     protected List<String> getXstreamAliases() {
         return Arrays.asList(GmdConstants.GMD_LOCAL_NAME, MgmpConstants.GMD_METACARD_TYPE_NAME);
@@ -131,96 +133,87 @@ public class MgmpConverter extends AbstractGmdConverter {
     @Override
     protected XstreamPathValueTracker buildPaths(MetacardImpl metacard) {
 
-        XstreamPathValueTracker pathValueTracker = new XstreamPathValueTracker();
+        this.metacard = metacard;
+        pathValueTracker = new XstreamPathValueTracker();
 
-        addNamespaces(pathValueTracker);
+        addNamespaces();
 
-        addFileIdentifier(pathValueTracker, metacard);
-        addCharacterSet(pathValueTracker);
-        addHierarchyLevel(pathValueTracker);
-        addContact(pathValueTracker, metacard);
-        addDateStamp(pathValueTracker, metacard);
-        addMetadataStandardName(pathValueTracker);
-        addMetadataStandardVersion(pathValueTracker);
-        addCrs(pathValueTracker, metacard);
-        addMdIdentification(pathValueTracker, metacard);
-        addContentInfo(pathValueTracker, metacard);
-        addDistributionInfo(pathValueTracker, metacard);
-        addMetadataConstraints(pathValueTracker, metacard);
+        addFileIdentifier();
+        addCharacterSet();
+        addHierarchyLevel();
+        addContact();
+        addDateStamp();
+        addMetadataStandardName();
+        addMetadataStandardVersion();
+        addCrs();
+        addMdIdentification();
+        addContentInfo();
+        addDistributionInfo();
+        addMetadataConstraints();
 
         return pathValueTracker;
     }
 
-    private void addMetadataConstraints(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addMetadataSecurityClassification(pathValueTracker, metacard);
-        addOriginatorSecurity(pathValueTracker, metacard);
-        addMetadataReleasability(pathValueTracker, metacard);
+    private void addMetadataConstraints() {
+        addMetadataSecurityClassification();
+        addOriginatorSecurity();
+        addMetadataReleasability();
     }
 
-    private void addDistributionInfo(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addGmdMetacardFormat(pathValueTracker, metacard);
-        addGmdResourceUri(pathValueTracker, metacard);
+    private void addDistributionInfo() {
+        addGmdMetacardFormat();
+        addGmdResourceUri();
     }
 
-    private void addContentInfo(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
-        addImageDescription(pathValueTracker, metacard);
+    private void addContentInfo() {
+        addImageDescription();
     }
 
-    private void addMdIdentification(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addMdIdentificationCitation(pathValueTracker, metacard);
-        addMdIdentificationAbstract(pathValueTracker, metacard);
-        addMdIdentificationStatus(pathValueTracker, metacard);
-        addMdIdentificationPointOfContact(pathValueTracker, metacard);
-        addMdIdentificationDescriptiveKeywords(pathValueTracker, metacard);
-        addMdIdentificationResourceConstraints(pathValueTracker, metacard);
-        addMdIdentificationAggregationInfo(pathValueTracker, metacard);
-        addMdIdentificationLanguage(pathValueTracker, metacard);
-        addMdIdentificationTopicCategories(pathValueTracker, metacard);
-        addMdIdentificationExtent(pathValueTracker, metacard);
+    private void addMdIdentification() {
+        addMdIdentificationCitation();
+        addMdIdentificationAbstract();
+        addMdIdentificationStatus();
+        addMdIdentificationPointOfContact();
+        addMdIdentificationDescriptiveKeywords();
+        addMdIdentificationResourceConstraints();
+        addMdIdentificationAggregationInfo();
+        addMdIdentificationLanguage();
+        addMdIdentificationTopicCategories();
+        addMdIdentificationExtent();
     }
 
-    private void addMdIdentificationExtent(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addGeographicIdentifier(pathValueTracker, metacard);
-        addBoundingPolygon(pathValueTracker, metacard);
-        addTemporalElements(pathValueTracker, metacard);
-        addVerticalElement(pathValueTracker, metacard);
+    private void addMdIdentificationExtent() {
+        addGeographicIdentifier();
+        addBoundingPolygon();
+        addTemporalElements();
+        addVerticalElement();
     }
 
-    private void addMdIdentificationResourceConstraints(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addResourceSecurityClassification(pathValueTracker, metacard);
-        addMdIdentificationResourceConstraintsOriginatorClassification(pathValueTracker, metacard);
-        addMdIdentificationResourceConstraintsCaveats(pathValueTracker, metacard);
+    private void addMdIdentificationResourceConstraints() {
+        addResourceSecurityClassification();
+        addMdIdentificationResourceConstraintsOriginatorClassification();
+        addMdIdentificationResourceConstraintsCaveats();
     }
 
-    private void addMdIdentificationResourceConstraintsOriginatorClassification(
-            XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Security.RESOURCE_ORIGINATOR_CLASSIFICATION,
+    private void addMdIdentificationResourceConstraintsOriginatorClassification() {
+        addFieldIfString(Security.RESOURCE_ORIGINATOR_CLASSIFICATION,
                 MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_PATH,
-                (pvt, mc) -> {
-                    pvt.add(new Path(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
+                () -> {
+                    pathValueTracker.add(new Path(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
                             MgmpConstants.MGMP_CLASSIFICATION_CODE);
                 });
     }
 
-    private void addMdIdentificationCitation(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addGmdTitle(pathValueTracker, metacard);
-        addModifiedDate(pathValueTracker, metacard);
-        addCreatedDate(pathValueTracker, metacard);
-        addExpirationDate(pathValueTracker, metacard);
+    private void addMdIdentificationCitation() {
+        addGmdTitle();
+        addModifiedDate();
+        addCreatedDate();
+        addExpirationDate();
     }
 
-    private void addMdIdentificationLanguage(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addMdIdentificationLanguage() {
 
-        List<String> languageCodes = Utilities.getValues(metacard, Core.LANGUAGE);
+        List<String> languageCodes = getValues(Core.LANGUAGE);
 
         if (languageCodes.isEmpty()) {
             languageCodes = Collections.singletonList(Locale.ENGLISH.getISO3Language());
@@ -232,36 +225,29 @@ public class MgmpConverter extends AbstractGmdConverter {
                         "")
                 .collect(Collectors.toList());
 
-        List<String> languageCodeList = Utilities.replace(languageCodes,
-                MgmpConstants.LANGUAGE_CODE_LIST);
+        List<String> languageCodeList = replace(languageCodes, MgmpConstants.LANGUAGE_CODE_LIST);
 
-        Utilities.addMultiValues(pathValueTracker,
-                languageCodeList,
-                MgmpConstants.MD_IDENTIFICATION_LANGUAGE_CODE_LIST_PATH);
-        Utilities.addMultiValues(pathValueTracker,
-                languageCodes,
+        addMultiValues(languageCodeList, MgmpConstants.MD_IDENTIFICATION_LANGUAGE_CODE_LIST_PATH);
+        addMultiValues(languageCodes,
                 MgmpConstants.MD_IDENTIFICATION_LANGUAGE_CODE_LIST_VALUE_PATH);
-        Utilities.addMultiValues(pathValueTracker,
-                languageTexts,
-                MgmpConstants.MD_IDENTIFICATION_LANGUAGE_TEXT_PATH);
+        addMultiValues(languageTexts, MgmpConstants.MD_IDENTIFICATION_LANGUAGE_TEXT_PATH);
 
     }
 
-    private void addMdIdentificationAggregationInfo(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addMdIdentificationAggregationInfoAggregateDataSetIdentifier(pathValueTracker, metacard);
+    private void addMdIdentificationAggregationInfo() {
+        addMdIdentificationAggregationInfoAggregateDataSetIdentifier();
     }
 
-    private void addMetadataStandardVersion(XstreamPathValueTracker pathValueTracker) {
+    private void addMetadataStandardVersion() {
         pathValueTracker.add(new Path(MgmpConstants.MD_METADATA_STANDARD_VERSION_PATH), "2.0");
     }
 
-    private void addMetadataStandardName(XstreamPathValueTracker pathValueTracker) {
+    private void addMetadataStandardName() {
         pathValueTracker.add(new Path(MgmpConstants.MD_METADATA_STANDARD_NAME_PATH),
                 "MOD Geospatial Metadata Profile");
     }
 
-    private void addNamespaces(XstreamPathValueTracker pathValueTracker) {
+    private void addNamespaces() {
         pathValueTracker.add(new Path(MgmpConstants.GMD_NAMESPACE_PATH),
                 MgmpConstants.GMD_NAMESPACE);
         pathValueTracker.add(new Path(MgmpConstants.GCO_NAMESPACE_PATH),
@@ -274,7 +260,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                 MgmpConstants.XLINK_NAMESPACE);
     }
 
-    private void addCharacterSet(XstreamPathValueTracker pathValueTracker) {
+    private void addCharacterSet() {
         pathValueTracker.add(new Path(MgmpConstants.CHARACTER_SET_CODE_LIST_PATH),
                 MgmpConstants.MGMP_CHARACTER_SET_CODE);
         pathValueTracker.add(new Path(MgmpConstants.CHARACTER_SET_CODE_LIST_VALUE_PATH),
@@ -283,67 +269,52 @@ public class MgmpConverter extends AbstractGmdConverter {
                 MgmpConstants.ENCODING_DESCRIPTION);
     }
 
-    private void addOriginatorSecurity(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addOriginatorSecurity() {
 
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Security.METADATA_ORIGINATOR_CLASSIFICATION,
+        addFieldIfString(Security.METADATA_ORIGINATOR_CLASSIFICATION,
                 MgmpConstants.METADATA_ORIGINATOR_SECURITY_PATH,
-                (pvt, mc) -> {
-                    pvt.add(new Path(MgmpConstants.METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH),
+                () -> {
+                    pathValueTracker.add(new Path(MgmpConstants.METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH),
                             MgmpConstants.CLASSIFICATION_CODE);
                 });
 
     }
 
-    private void addCrs(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
+    private void addCrs() {
 
-        List<String> validCrsCodes = Utilities.getValues(metacard,
-                Location.COORDINATE_REFERENCE_SYSTEM_CODE)
-                .stream()
+        List<String> validCrsCodes = getValues(Location.COORDINATE_REFERENCE_SYSTEM_CODE).stream()
                 .filter(crsFilter)
                 .collect(Collectors.toList());
 
-        Utilities.addMultiValues(pathValueTracker,
-                validCrsCodes.stream()
-                        .map(value -> value.split(":")[1])
-                        .collect(Collectors.toList()),
-                MgmpConstants.GMD_CRS_CODE_PATH);
+        addMultiValues(validCrsCodes.stream()
+                .map(value -> value.split(":")[1])
+                .collect(Collectors.toList()), MgmpConstants.GMD_CRS_CODE_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                validCrsCodes.stream()
-                        .map(value -> value.split(":")[0])
-                        .collect(Collectors.toList()),
-                MgmpConstants.GMD_CRS_AUTHORITY_PATH);
+        addMultiValues(validCrsCodes.stream()
+                .map(value -> value.split(":")[0])
+                .collect(Collectors.toList()), MgmpConstants.GMD_CRS_AUTHORITY_PATH);
 
     }
 
-    private void addBoundingPolygon(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.getValues(metacard, Core.LOCATION)
-                .stream()
+    private void addBoundingPolygon() {
+        getValues(Core.LOCATION).stream()
                 .findFirst()
                 .ifPresent(location -> {
                     try {
                         Geometry geometry = new WKTReader().read(location);
 
-                        String str = Stream.of(geometry.getCoordinates())
+                        Optional<String> str = Optional.of(Stream.of(geometry.getCoordinates())
                                 .flatMap(coordinate -> Stream.of(coordinate.x, coordinate.y))
                                 .map(d -> Double.toString(d))
-                                .collect(Collectors.joining(" "));
+                                .collect(Collectors.joining(" ")));
 
-                        pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_POLYGON_GMLID_PATH,
+                        pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_POLYGON_GMLID_PATH,
                                 geographicElementIndex)), gmlIdSupplier.get());
-                        pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_POLYGON_SRSNAME_PATH,
+                        pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_POLYGON_SRSNAME_PATH,
                                 geographicElementIndex)), MgmpConstants.GMD_POLYGON_SRSNAME);
 
-                        Utilities.addFieldIfString(pathValueTracker,
-                                metacard,
-                                mc -> {
-                                    return Optional.of(str);
-                                },
-                                Utilities.replaceIndex(MgmpConstants.BOUNDING_POLYGON_PATH,
+                        addFieldIfString(() -> str,
+                                replaceIndex(MgmpConstants.BOUNDING_POLYGON_PATH,
                                         geographicElementIndex));
 
                         geographicElementIndex++;
@@ -373,17 +344,13 @@ public class MgmpConverter extends AbstractGmdConverter {
                                 .allMatch(OptionalDouble::isPresent);
 
                         if (allSet) {
-                            addBoundingBoxElement(pathValueTracker,
-                                    MgmpConstants.WEST_BOUND_LONGITUDE_PATH,
+                            addBoundingBoxElement(MgmpConstants.WEST_BOUND_LONGITUDE_PATH,
                                     westBoundLongitude);
-                            addBoundingBoxElement(pathValueTracker,
-                                    MgmpConstants.EAST_BOUND_LONGITUDE_PATH,
+                            addBoundingBoxElement(MgmpConstants.EAST_BOUND_LONGITUDE_PATH,
                                     eastBoundLongitude);
-                            addBoundingBoxElement(pathValueTracker,
-                                    MgmpConstants.SOUTH_BOUND_LATITUDE_PATH,
+                            addBoundingBoxElement(MgmpConstants.SOUTH_BOUND_LATITUDE_PATH,
                                     southBoundLatitude);
-                            addBoundingBoxElement(pathValueTracker,
-                                    MgmpConstants.NORTH_BOUND_LATITUDE_PATH,
+                            addBoundingBoxElement(MgmpConstants.NORTH_BOUND_LATITUDE_PATH,
                                     northBoundLatitude);
 
                             geographicElementIndex++;
@@ -396,38 +363,26 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     }
 
-    private void addBoundingBoxElement(XstreamPathValueTracker pathValueTracker, String path,
-            OptionalDouble optionalDouble) {
-        pathValueTracker.add(new Path(Utilities.replaceIndex(path, geographicElementIndex)),
+    private void addBoundingBoxElement(String path, OptionalDouble optionalDouble) {
+        pathValueTracker.add(new Path(replaceIndex(path, geographicElementIndex)),
                 String.format(BOUNDING_BOX_FORMAT, optionalDouble.getAsDouble()));
     }
 
-    private void addGeographicIdentifier(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Location.COUNTRY_CODE),
+    private void addGeographicIdentifier() {
+        addMultiValues(getValues(Location.COUNTRY_CODE),
                 MgmpConstants.GMD_COUNTRY_CODE_PATH,
                 geographicElementIndex);
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.replace(Utilities.getValues(metacard, Location.COUNTRY_CODE),
-                        "ISO3166-1-a3"),
+        addMultiValues(replace(getValues(Location.COUNTRY_CODE), "ISO3166-1-a3"),
                 MgmpConstants.GMD_COUNTRY_CODE_SPACE_PATH,
                 geographicElementIndex);
-        geographicElementIndex += Utilities.getValues(metacard, Location.COUNTRY_CODE)
-                .size();
+        geographicElementIndex += getValues(Location.COUNTRY_CODE).size();
     }
 
-    private void addMdIdentificationStatus(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                GmdConstants.RESOURCE_STATUS,
-                GmdConstants.RESOURCE_STATUS_PATH,
-                (pvt, mc) -> {
-                    pvt.add(new Path(MgmpConstants.RESOURCE_STATUS_CODE_LIST_PATH),
-                            "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ProgressCode");
-                });
-
+    private void addMdIdentificationStatus() {
+        addFieldIfString(GmdConstants.RESOURCE_STATUS, GmdConstants.RESOURCE_STATUS_PATH, () -> {
+            pathValueTracker.add(new Path(MgmpConstants.RESOURCE_STATUS_CODE_LIST_PATH),
+                    MgmpConstants.MGMP_PROGRESS_CODE);
+        });
     }
 
     private String generateGmlGuid() {
@@ -435,11 +390,10 @@ public class MgmpConverter extends AbstractGmdConverter {
                 .toString();
     }
 
-    private void addTemporalElements(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addTemporalElements() {
 
-        List<String> starts = Utilities.getDateStrings(metacard, DateTime.START);
-        List<String> ends = Utilities.getDateStrings(metacard, DateTime.END);
+        List<String> starts = getDateStrings(DateTime.START);
+        List<String> ends = getDateStrings(DateTime.END);
 
         if (starts.size() == ends.size()) {
             for (int i = 0; i < starts.size(); i++) {
@@ -450,30 +404,28 @@ public class MgmpConverter extends AbstractGmdConverter {
                 int elementIndex = i + 1;
 
                 if (start.equals(end)) {
-                    pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_TIME_INSTANT_ID_PATH,
+                    pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_TEMPORAL_TIME_INSTANT_ID_PATH,
                             elementIndex)), gmlIdSupplier.get());
-                    pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_INSTANT_PATH,
+                    pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_TEMPORAL_INSTANT_PATH,
                             elementIndex)), start);
                 } else {
-                    pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_TIME_PERIOD_ID_PATH,
+                    pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_TEMPORAL_TIME_PERIOD_ID_PATH,
                             elementIndex)), gmlIdSupplier.get());
-                    pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_START_PATH,
+                    pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_TEMPORAL_START_PATH,
                             elementIndex)), start);
-                    pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_END_PATH,
+                    pathValueTracker.add(new Path(replaceIndex(MgmpConstants.GMD_TEMPORAL_END_PATH,
                             elementIndex)), end);
                 }
             }
         }
     }
 
-    private void addVerticalElement(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addVerticalElement() {
 
         final AtomicBoolean addVerticalCRS = new AtomicBoolean(false);
 
-        Utilities.addFieldIfString(pathValueTracker, metacard, mc -> {
-            OptionalDouble optionalDouble = Utilities.getSerializables(mc, Location.ALTITUDE)
-                    .stream()
+        addFieldIfString(() -> {
+            OptionalDouble optionalDouble = getSerializables(Location.ALTITUDE).stream()
                     .filter(Double.class::isInstance)
                     .mapToDouble(Double.class::cast)
                     .min();
@@ -484,9 +436,8 @@ public class MgmpConverter extends AbstractGmdConverter {
             return Optional.empty();
         }, MgmpConstants.GMD_MIN_ALTITUDE_PATH);
 
-        Utilities.addFieldIfString(pathValueTracker, metacard, mc -> {
-            OptionalDouble optionalDouble = Utilities.getSerializables(mc, Location.ALTITUDE)
-                    .stream()
+        addFieldIfString(() -> {
+            OptionalDouble optionalDouble = getSerializables(Location.ALTITUDE).stream()
                     .filter(Double.class::isInstance)
                     .mapToDouble(Double.class::cast)
                     .max();
@@ -505,98 +456,76 @@ public class MgmpConverter extends AbstractGmdConverter {
         }
     }
 
-    private void addCreatedDate(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                mc -> {
-                    return Optional.ofNullable(mc.getCreatedDate())
-                            .map(Utilities::dateToIso8601);
-                },
-                Utilities.replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex),
-                this::addCreatedDateExtra);
+    private void addCreatedDate() {
+        addFieldIfString(() -> {
+            return Optional.ofNullable(metacard.getCreatedDate())
+                    .map(this::dateToIso8601);
+        }, replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex), this::addCreatedDateExtra);
     }
 
-    private void addCreatedDateExtra(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addDateTypeCode(pathValueTracker, GmdConstants.CREATION, "Creation");
+    private void addCreatedDateExtra() {
+        addDateTypeCode(GmdConstants.CREATION, "Creation");
         dateElementIndex++;
     }
 
-    private void addExpirationDate(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                mc -> {
-                    return Optional.ofNullable(mc.getExpirationDate())
-                            .map(Utilities::dateToIso8601);
-                },
-                Utilities.replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex),
-                this::addExpirationDateExtra);
+    private void addExpirationDate() {
+        addFieldIfString(() -> {
+            return Optional.ofNullable(metacard.getExpirationDate())
+                    .map(this::dateToIso8601);
+        }, replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex), this::addExpirationDateExtra);
     }
 
-    private void addExpirationDateExtra(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addDateTypeCode(pathValueTracker, GmdConstants.EXPIRY, "Expiry");
+    private void addExpirationDateExtra() {
+        addDateTypeCode(GmdConstants.EXPIRY, "Expiry");
         dateElementIndex++;
     }
 
-    private void addDateTypeCode(XstreamPathValueTracker pathValueTracker, String dateTypeCodeValue,
-            String dateTypeText) {
-        pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.DATE_TYPE_CODE_VALUE_PATH,
+    private void addDateTypeCode(String dateTypeCodeValue, String dateTypeText) {
+        pathValueTracker.add(new Path(replaceIndex(MgmpConstants.DATE_TYPE_CODE_VALUE_PATH,
                 dateElementIndex)), dateTypeCodeValue);
-        pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.DATE_TYPE_CODE_PATH,
-                dateElementIndex)), "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_DateTypeCode");
-        pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.DATE_TYPE_CODE_TEXT_PATH,
+        pathValueTracker.add(new Path(replaceIndex(MgmpConstants.DATE_TYPE_CODE_PATH,
+                dateElementIndex)), MgmpConstants.MGMP_DATE_TYPE_CODE);
+        pathValueTracker.add(new Path(replaceIndex(MgmpConstants.DATE_TYPE_CODE_TEXT_PATH,
                 dateElementIndex)), dateTypeText);
     }
 
-    private void addModifiedDate(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                mc -> {
-                    return Optional.ofNullable(mc.getModifiedDate())
-                            .map(Utilities::dateToIso8601);
-                },
-                Utilities.replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex),
-                this::addModifiedDateExtra);
+    private void addModifiedDate() {
+        addFieldIfString(() -> {
+            return Optional.ofNullable(metacard.getModifiedDate())
+                    .map(this::dateToIso8601);
+        }, replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex), this::addModifiedDateExtra);
     }
 
-    private void addModifiedDateExtra(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        addDateTypeCode(pathValueTracker, GmdConstants.LAST_UPDATE, "LastUpdate");
+    private void addModifiedDateExtra() {
+        addDateTypeCode(GmdConstants.LAST_UPDATE, "LastUpdate");
         dateElementIndex++;
     }
 
-    private void addDateStamp(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
+    private void addDateStamp() {
 
-        Optional<Date> modified = Utilities.getOptionalDate(metacard, Core.METACARD_MODIFIED);
-        Optional<Date> created = Utilities.getOptionalDate(metacard, Core.METACARD_CREATED);
+        Optional<Date> modified = getOptionalDate(Core.METACARD_MODIFIED);
+        Optional<Date> created = getOptionalDate(Core.METACARD_CREATED);
 
         Optional<Date> date = modified.isPresent() ?
                 modified :
                 (created.isPresent() ? created : Optional.empty());
 
         date.ifPresent(date1 -> pathValueTracker.add(new Path(GmdConstants.DATE_TIME_STAMP_PATH),
-                Utilities.dateToIso8601(date1)));
+                dateToIso8601(date1)));
     }
 
-    private void addMdIdentificationPointOfContact(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addMdIdentificationPointOfContact() {
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.POINT_OF_CONTACT_NAME),
+        addMultiValues(getValues(Contact.POINT_OF_CONTACT_NAME),
                 MgmpConstants.POINT_OF_CONTACT_NAME_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.POINT_OF_CONTACT_PHONE),
+        addMultiValues(getValues(Contact.POINT_OF_CONTACT_PHONE),
                 MgmpConstants.POINT_OF_CONTACT_PHONE_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.POINT_OF_CONTACT_ADDRESS),
+        addMultiValues(getValues(Contact.POINT_OF_CONTACT_ADDRESS),
                 MgmpConstants.POINT_OF_CONTACT_ADDRESS_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.POINT_OF_CONTACT_EMAIL),
+        addMultiValues(getValues(Contact.POINT_OF_CONTACT_EMAIL),
                 MgmpConstants.POINT_OF_CONTACT_EMAIL_PATH);
 
         pathValueTracker.add(new Path(MgmpConstants.POINT_OF_CONTACT_ROLE_CODE_LIST_PATH),
@@ -607,24 +536,16 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     }
 
-    private void addContact(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
+    private void addContact() {
 
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Contact.PUBLISHER_NAME,
-                GmdConstants.CONTACT_ORGANISATION_PATH);
+        addFieldIfString(Contact.PUBLISHER_NAME, GmdConstants.CONTACT_ORGANISATION_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.PUBLISHER_PHONE),
-                MgmpConstants.GMD_CONTACT_PHONE_PATH);
+        addMultiValues(getValues(Contact.PUBLISHER_PHONE), MgmpConstants.GMD_CONTACT_PHONE_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.PUBLISHER_ADDRESS),
+        addMultiValues(getValues(Contact.PUBLISHER_ADDRESS),
                 MgmpConstants.GMD_POINT_OF_CONTACT_ADDRESS_DELIVERY_POINT_PATH);
 
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Contact.PUBLISHER_EMAIL),
-                MgmpConstants.GMD_CONTACT_EMAIL_PATH);
+        addMultiValues(getValues(Contact.PUBLISHER_EMAIL), MgmpConstants.GMD_CONTACT_EMAIL_PATH);
 
         pathValueTracker.add(new Path(MgmpConstants.CONTACT_ROLE_CODE_LIST_PATH),
                 MgmpConstants.MGMP_ROLE_CODE);
@@ -634,10 +555,9 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     }
 
-    private void addGmdResourceUri(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker, metacard, mc -> {
-            return Optional.ofNullable(mc.getResourceURI())
+    private void addGmdResourceUri() {
+        addFieldIfString(() -> {
+            return Optional.ofNullable(metacard.getResourceURI())
                     .map(URI::toString);
         }, GmdConstants.LINKAGE_URI_PATH);
     }
@@ -654,24 +574,22 @@ public class MgmpConverter extends AbstractGmdConverter {
         return id;
     }
 
-    private void addMdIdentificationAggregationInfoAggregateDataSetIdentifier(
-            XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
+    //@formatter:off
+    private void addMdIdentificationAggregationInfoAggregateDataSetIdentifier() {
 
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                mc -> {
-                    return Optional.ofNullable(mc.getAttribute(Associations.RELATED))
-                            .map(Attribute::getValue)
-                            .filter(String.class::isInstance)
-                            .map(String.class::cast)
-                            .map(this::formatId);
-                },
-                GmdConstants.ASSOCIATION_PATH,
-                this::addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra);
+        addFieldIfString(() -> {
+            return Optional.ofNullable(metacard.getAttribute(Associations.RELATED))
+                    .map(Attribute::getValue)
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .map(this::formatId);
+        },
+            GmdConstants.ASSOCIATION_PATH,
+            this::addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra);
     }
+    //@formatter:on
 
-    private void addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra(
-            XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
+    private void addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra() {
         pathValueTracker.add(new Path(MgmpConstants.ASSOCIATIONS_RELATED_CODE_SPACE_PATH),
                 "mediaReferenceNo");
         pathValueTracker.add(new Path(MgmpConstants.ASSOCIATIONS_RELATED_TYPE_CODE_LIST_PATH),
@@ -682,55 +600,37 @@ public class MgmpConverter extends AbstractGmdConverter {
                 "Media Association");
     }
 
-    private void addMdIdentificationTopicCategories(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Topic.CATEGORY),
-                MgmpConstants.GMD_TOPIC_CATEGORY_PATH);
+    private void addMdIdentificationTopicCategories() {
+        addMultiValues(getValues(Topic.CATEGORY), MgmpConstants.GMD_TOPIC_CATEGORY_PATH);
     }
 
-    private void addMdIdentificationDescriptiveKeywords(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addMultiValues(pathValueTracker,
-                Utilities.getValues(metacard, Topic.KEYWORD),
-                MgmpConstants.GMD_KEYWORD_PATH);
+    private void addMdIdentificationDescriptiveKeywords() {
+        addMultiValues(getValues(Topic.KEYWORD), MgmpConstants.GMD_KEYWORD_PATH);
     }
 
-    private void addGmdMetacardFormat(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Media.FORMAT,
-                GmdConstants.FORMAT_PATH);
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Media.FORMAT_VERSION,
-                GmdConstants.FORMAT_VERSION_PATH);
+    private void addGmdMetacardFormat() {
+        addFieldIfString(Media.FORMAT, GmdConstants.FORMAT_PATH);
+        addFieldIfString(Media.FORMAT_VERSION, GmdConstants.FORMAT_VERSION_PATH);
     }
 
-    private void addMdIdentificationAbstract(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Core.DESCRIPTION,
-                GmdConstants.ABSTRACT_PATH);
+    private void addMdIdentificationAbstract() {
+        addFieldIfString(Core.DESCRIPTION, GmdConstants.ABSTRACT_PATH);
     }
 
-    private void addGmdTitle(XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker, metacard, mc -> {
-            return Optional.of(StringUtils.defaultString(mc.getTitle()));
+    private void addGmdTitle() {
+        addFieldIfString(() -> {
+            return Optional.of(StringUtils.defaultString(metacard.getTitle()));
         }, GmdConstants.TITLE_PATH);
     }
 
-    private void addFileIdentifier(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker, metacard, mc -> {
-            return Optional.of(StringUtils.defaultString(mc.getId()))
+    private void addFileIdentifier() {
+        addFieldIfString(() -> {
+            return Optional.of(StringUtils.defaultString(metacard.getId()))
                     .map(this::formatId);
         }, GmdConstants.FILE_IDENTIFIER_PATH);
     }
 
-    private void addHierarchyLevel(XstreamPathValueTracker pathValueTracker) {
+    private void addHierarchyLevel() {
         pathValueTracker.add(new Path(GmdConstants.CODE_LIST_VALUE_PATH), "dataset");
         pathValueTracker.add(new Path(GmdConstants.CODE_LIST_PATH), MgmpConstants.MGMP_SCOPE_CODE);
     }
@@ -740,15 +640,14 @@ public class MgmpConverter extends AbstractGmdConverter {
         return GmdConstants.GMD_LOCAL_NAME;
     }
 
-    private void addMetadataReleasability(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addMetadataReleasability() {
         Attribute releasibilityAttribute = metacard.getAttribute(Security.METADATA_RELEASABILITY);
         Attribute disseminationAttribute = metacard.getAttribute(Security.METADATA_DISSEMINATION);
 
         if (isReleasabilityAndDisseminationSet(releasibilityAttribute, disseminationAttribute)) {
 
             String value = disseminationAttribute.getValue()
-                    .toString() + " " + Utilities.join(releasibilityAttribute.getValues(), "/");
+                    .toString() + " " + join(releasibilityAttribute.getValues(), "/");
 
             pathValueTracker.add(new Path(MgmpConstants.METADATA_RELEASABILITY_PATH), value);
 
@@ -765,8 +664,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                 && StringUtils.isNotBlank((String) disseminationAttribute.getValue());
     }
 
-    private void addMdIdentificationResourceConstraintsCaveats(
-            XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
+    private void addMdIdentificationResourceConstraintsCaveats() {
 
         Attribute releasibilityAttribute = metacard.getAttribute(Security.RESOURCE_RELEASABILITY);
         Attribute disseminationAttribute = metacard.getAttribute(Security.RESOURCE_DISSEMINATION);
@@ -774,7 +672,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         if (isReleasabilityAndDisseminationSet(releasibilityAttribute, disseminationAttribute)) {
 
             String value = disseminationAttribute.getValue()
-                    .toString() + " " + Utilities.join(releasibilityAttribute.getValues(), "/");
+                    .toString() + " " + join(releasibilityAttribute.getValues(), "/");
 
             pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_RELEASABILITY_PATH),
                     value);
@@ -782,32 +680,25 @@ public class MgmpConverter extends AbstractGmdConverter {
         }
     }
 
-    private void addResourceSecurityClassification(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Security.RESOURCE_CLASSIFICATION,
+    private void addResourceSecurityClassification() {
+        addFieldIfString(Security.RESOURCE_CLASSIFICATION,
                 MgmpConstants.RESOURCE_SECURITY_PATH,
-                (pvt, mc) -> {
-                    pvt.add(new Path(MgmpConstants.RESOURCE_SECURITY_CODE_LIST_PATH),
+                () -> {
+                    pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_CODE_LIST_PATH),
                             MgmpConstants.CLASSIFICATION_CODE);
                 });
     }
 
-    private void addMetadataSecurityClassification(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                Security.METADATA_CLASSIFICATION,
+    private void addMetadataSecurityClassification() {
+        addFieldIfString(Security.METADATA_CLASSIFICATION,
                 MgmpConstants.METADATA_SECURITY_PATH,
-                (pvt, mc) -> {
-                    pvt.add(new Path(MgmpConstants.METADATA_SECURITY_CODE_LIST_PATH),
+                () -> {
+                    pathValueTracker.add(new Path(MgmpConstants.METADATA_SECURITY_CODE_LIST_PATH),
                             MgmpConstants.CLASSIFICATION_CODE);
                 });
     }
 
-    private void addImageDescription(XstreamPathValueTracker pathValueTracker,
-            MetacardImpl metacard) {
+    private void addImageDescription() {
 
         Optional<String> cloudCoverage = Optional.ofNullable(metacard.getAttribute(Isr.CLOUD_COVER))
                 .map(Attribute::getValue)
@@ -818,8 +709,8 @@ public class MgmpConverter extends AbstractGmdConverter {
 
         boolean isCloudCoverageAvailable = cloudCoverage.isPresent();
 
-        List<Serializable> ratingScaleValues = Utilities.getSerializables(metacard,
-                Isr.NATIONAL_IMAGERY_INTERPRETABILITY_RATING_SCALE);
+        List<Serializable> ratingScaleValues =
+                getSerializables(Isr.NATIONAL_IMAGERY_INTERPRETABILITY_RATING_SCALE);
 
         boolean isRatingScaleValuesAvailable = ratingScaleValues.size() == 1;
 
@@ -859,151 +750,126 @@ public class MgmpConverter extends AbstractGmdConverter {
 
         }
 
-        Utilities.addFieldIfString(pathValueTracker,
-                metacard,
-                mc -> cloudCoverage,
-                MgmpConstants.CLOUD_COVERAGE_PATH);
+        addFieldIfString(() -> cloudCoverage, MgmpConstants.CLOUD_COVERAGE_PATH);
     }
 
     public void setGmlIdSupplier(Supplier<String> gmlIdSupplier) {
         this.gmlIdSupplier = gmlIdSupplier;
     }
 
-    private static class Utilities {
+    private List<String> replace(List<String> list, String replacement) {
+        return Collections.nCopies(list.size(), replacement);
+    }
 
-        private static List<String> replace(List<String> list, String replacement) {
-            return Collections.nCopies(list.size(), replacement);
+    private Optional<Date> getOptionalDate(String dateField) {
+        return Optional.ofNullable(metacard.getAttribute(dateField))
+                .map(Attribute::getValue)
+                .filter(Date.class::isInstance)
+                .map(Date.class::cast);
+    }
+
+    private <T> String join(List<T> values, String joiner) {
+        return values.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(joiner));
+    }
+
+    private String replaceIndex(String template, int index) {
+        return template.replace(MgmpConstants.INDEX_TAG, Integer.toString(index));
+    }
+
+    private List<Serializable> getSerializables(String attributeName) {
+
+        Attribute attribute = metacard.getAttribute(attributeName);
+
+        if (attribute == null) {
+            return Collections.emptyList();
         }
 
-        private static Optional<Date> getOptionalDate(MetacardImpl metacard, String dateField) {
-            return Optional.ofNullable(metacard.getAttribute(dateField))
+        List<Serializable> serializables = attribute.getValues();
+
+        if (serializables == null) {
+            return Collections.emptyList();
+        }
+
+        return serializables.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getValues(String attributeName) {
+        return getSerializables(attributeName).stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    private void addMultiValues(List<String> values, String xpathTemplate) {
+        addMultiValues(values, xpathTemplate, 1);
+    }
+
+    private void addMultiValues(List<String> values, String xpathTemplate, int startIndex) {
+        int index = startIndex;
+        for (String value : values) {
+            pathValueTracker.add(new Path(replaceIndex(xpathTemplate, index)), value);
+            index++;
+        }
+    }
+
+    private List<String> getDateStrings(String attributeName) {
+        return getSerializables(attributeName).stream()
+                .filter(Objects::nonNull)
+                .filter(Date.class::isInstance)
+                .map(Date.class::cast)
+                .map(this::dateToIso8601)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * @param attributeName the attribute source
+     * @param xpath         the xpath destination
+     * @param extraAdd      execute this BiConsumer if the value string is being applied to the pathValueTracker
+     * @return true if the value was added, false otherwise
+     */
+    private boolean addFieldIfString(String attributeName, String xpath, Runnable extraAdd) {
+        return addFieldIfString(() -> {
+            return Optional.of(metacard.getAttribute(attributeName))
                     .map(Attribute::getValue)
-                    .filter(Date.class::isInstance)
-                    .map(Date.class::cast);
-        }
-
-        private static <T> String join(List<T> values, String joiner) {
-            return values.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining(joiner));
-        }
-
-        private static String replaceIndex(String template, int index) {
-            return template.replace(MgmpConstants.INDEX_TAG, Integer.toString(index));
-        }
-
-        private static List<Serializable> getSerializables(MetacardImpl metacard,
-                String attributeName) {
-
-            Attribute attribute = metacard.getAttribute(attributeName);
-
-            if (attribute == null) {
-                return Collections.emptyList();
-            }
-
-            List<Serializable> serializables = attribute.getValues();
-
-            if (serializables == null) {
-                return Collections.emptyList();
-            }
-
-            return serializables.stream()
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
-
-        private static List<String> getValues(MetacardImpl metacard, String attributeName) {
-            return getSerializables(metacard, attributeName).stream()
                     .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .collect(Collectors.toList());
+                    .map(String.class::cast);
+        }, xpath, extraAdd);
+    }
+
+    private boolean addFieldIfString(String attributeName, String xpath) {
+        return addFieldIfString(attributeName, xpath, () -> {
+        });
+    }
+
+    private boolean addFieldIfString(Supplier<Optional<String>> metacardFunction, String xpath,
+            Runnable extraAdd) {
+        return metacardFunction.get()
+                .map(value -> {
+                    pathValueTracker.add(new Path(xpath), value);
+                    extraAdd.run();
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    private boolean addFieldIfString(Supplier<Optional<String>> metacardFunction, String xpath) {
+        return addFieldIfString(metacardFunction, xpath, () -> {
+        });
+    }
+
+    private String dateToIso8601(Date date) {
+        GregorianCalendar modifiedCal = new GregorianCalendar();
+        if (date != null) {
+            modifiedCal.setTime(date);
         }
+        modifiedCal.setTimeZone(UTC_TIME_ZONE);
 
-        private static void addMultiValues(XstreamPathValueTracker pathValueTracker,
-                List<String> values, String xpathTemplate) {
-            addMultiValues(pathValueTracker, values, xpathTemplate, 1);
-        }
-
-        private static void addMultiValues(XstreamPathValueTracker pathValueTracker,
-                List<String> values, String xpathTemplate, int startIndex) {
-            int index = startIndex;
-            for (String value : values) {
-                pathValueTracker.add(new Path(Utilities.replaceIndex(xpathTemplate, index)), value);
-                index++;
-            }
-
-        }
-
-        private static List<String> getDateStrings(MetacardImpl metacard, String attributeName) {
-            return Utilities.getSerializables(metacard, attributeName)
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .filter(Date.class::isInstance)
-                    .map(Date.class::cast)
-                    .map(Utilities::dateToIso8601)
-                    .collect(Collectors.toList());
-        }
-
-        /**
-         * @param pathValueTracker path value tracker
-         * @param metacard         the metacard
-         * @param attributeName    the attribute source
-         * @param xpath            the xpath destination
-         * @param extraAdd         execute this BiConsumer if the value string is being applied to the pathValueTracker
-         * @return true if the value was added, false otherwise
-         */
-        private static boolean addFieldIfString(XstreamPathValueTracker pathValueTracker,
-                MetacardImpl metacard, String attributeName, String xpath,
-                BiConsumer<XstreamPathValueTracker, MetacardImpl> extraAdd) {
-            return addFieldIfString(pathValueTracker, metacard, mc -> {
-                return Optional.of(mc)
-                        .map(m -> m.getAttribute(attributeName))
-                        .map(Attribute::getValue)
-                        .filter(String.class::isInstance)
-                        .map(String.class::cast);
-            }, xpath, extraAdd);
-        }
-
-        private static boolean addFieldIfString(XstreamPathValueTracker pathValueTracker,
-                MetacardImpl metacard, String attributeName, String xpath) {
-            return addFieldIfString(pathValueTracker, metacard, attributeName, xpath, (pvt, mc) -> {
-            });
-        }
-
-        private static boolean addFieldIfString(XstreamPathValueTracker pathValueTracker,
-                MetacardImpl metacard, Function<MetacardImpl, Optional<String>> metacardFunction,
-                String xpath, BiConsumer<XstreamPathValueTracker, MetacardImpl> extraAdd) {
-            return metacardFunction.apply(metacard)
-                    .map(value -> {
-                        pathValueTracker.add(new Path(xpath), value);
-                        extraAdd.accept(pathValueTracker, metacard);
-                        return true;
-                    })
-                    .orElse(false);
-        }
-
-        private static boolean addFieldIfString(XstreamPathValueTracker pathValueTracker,
-                MetacardImpl metacard, Function<MetacardImpl, Optional<String>> metacardFunction,
-                String xpath) {
-            return addFieldIfString(pathValueTracker,
-                    metacard,
-                    metacardFunction,
-                    xpath,
-                    (pvt, mc) -> {
-                    });
-        }
-
-        private static String dateToIso8601(Date date) {
-            GregorianCalendar modifiedCal = new GregorianCalendar();
-            if (date != null) {
-                modifiedCal.setTime(date);
-            }
-            modifiedCal.setTimeZone(UTC_TIME_ZONE);
-
-            return XSD_FACTORY.newXMLGregorianCalendar(modifiedCal)
-                    .toXMLFormat();
-        }
-
+        return XSD_FACTORY.newXMLGregorianCalendar(modifiedCal)
+                .toXMLFormat();
     }
 
 }

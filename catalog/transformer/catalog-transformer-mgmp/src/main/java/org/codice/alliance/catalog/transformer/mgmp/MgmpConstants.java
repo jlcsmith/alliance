@@ -39,6 +39,10 @@ public final class MgmpConstants {
 
     public static final String ENCODING_DESCRIPTION = "UTF-8";
 
+    public static final String MGMP_PROGRESS_CODE = "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ProgressCode";
+
+    public static final String MGMP_DATE_TYPE_CODE = "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_DateTypeCode";
+
     public static final String MGMP_ASSOCIATION_TYPE_CODE =
             "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_AssociationTypeCode";
 
