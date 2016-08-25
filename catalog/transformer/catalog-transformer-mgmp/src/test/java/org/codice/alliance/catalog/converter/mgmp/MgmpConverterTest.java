@@ -13,6 +13,8 @@
  **/
 package org.codice.alliance.catalog.converter.mgmp;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -24,7 +26,9 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -32,6 +36,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codice.alliance.catalog.core.api.impl.types.IsrAttributes;
@@ -39,8 +44,12 @@ import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.catalog.core.api.types.Security;
 import org.codice.alliance.catalog.transformer.mgmp.MgmpConstants;
 import org.codice.ddf.spatial.ogc.csw.catalog.common.GmdConstants;
+import org.codice.ddf.spatial.ogc.csw.catalog.converter.CswUnmarshallHelper;
+import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
@@ -70,8 +79,6 @@ import ddf.catalog.data.types.Topic;
 
 public class MgmpConverterTest {
 
-    public static final String GML_NAMESPACE = "http://www.opengis.net/gml/3.2";
-
     public static final String GSS_NAMESPACE = "http://www.isotc211.org/2005/gss";
 
     public static final String GTS_NAMESPACE = "http://www.isotc211.org/2005/gts";
@@ -79,6 +86,8 @@ public class MgmpConverterTest {
     public static final String GSR_NAMESPACE = "http://www.isotc211.org/2005/gsr";
 
     public static final String SRV_NAMESPACE = "http://www.isotc211.org/2005/srv";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MgmpConverterTest.class);
 
     private MetacardImpl metacard;
 
@@ -96,6 +105,10 @@ public class MgmpConverterTest {
                         new IsrAttributes()));
         metacard = new MetacardImpl(metacardType);
 
+        String referenceDateIso = "1972-02-12T21:30:00.000Z";
+
+        Date referenceDate = CswUnmarshallHelper.convertToDate(referenceDateIso);
+
         metacard.setId("22407eee80044d92afedcac07fff661b");
         metacard.setAttribute(new AttributeImpl(Isr.COMMENTS,
                 Arrays.asList("comment1", "comment2")));
@@ -105,18 +118,16 @@ public class MgmpConverterTest {
         metacard.setLocation("POLYGON (( 0 0, 10 0, 10 10, 0 10, 0 0 ))");
         metacard.setAttribute(Location.COUNTRY_CODE, (Serializable) Arrays.asList("USA", "GBR"));
         metacard.setAttribute(GmdConstants.RESOURCE_STATUS, "status1");
-        Date start1 = new Date();
-        Date end1 = new Date(start1.getTime() + 10000);
-        Date start2 = new Date(start1.getTime() + 50000);
-        metacard.setAttribute(DateTime.START, (Serializable) Arrays.asList(start1, start2));
+        Date end1 = new Date(referenceDate.getTime() + 10000);
+        Date start2 = new Date(referenceDate.getTime() + 50000);
+        metacard.setAttribute(DateTime.START, (Serializable) Arrays.asList(referenceDate, start2));
         metacard.setAttribute(DateTime.END, (Serializable) Arrays.asList(end1, start2));
         metacard.setAttribute(Location.ALTITUDE, (Serializable) Arrays.asList(1D, 2D, 3D, 4D, 5D));
-        metacard.setModifiedDate(new Date());
-        metacard.setCreatedDate(new Date());
-        metacard.setExpirationDate(new Date());
-        Date metacardModified = new Date();
-        metacard.setAttribute(Core.METACARD_MODIFIED, metacardModified);
-        metacard.setAttribute(Core.METACARD_CREATED, new Date(metacardModified.getTime() + 10000));
+        metacard.setModifiedDate(referenceDate);
+        metacard.setCreatedDate(referenceDate);
+        metacard.setExpirationDate(referenceDate);
+        metacard.setAttribute(Core.METACARD_MODIFIED, referenceDate);
+        metacard.setAttribute(Core.METACARD_CREATED, new Date(referenceDate.getTime() + 10000));
         metacard.setAttribute(Contact.PUBLISHER_NAME, (Serializable) Arrays.asList("pub1", "pub2"));
         metacard.setAttribute(Contact.PUBLISHER_PHONE,
                 (Serializable) Arrays.asList("phone1", "phone2"));
@@ -138,8 +149,8 @@ public class MgmpConverterTest {
         metacard.setAttribute(Security.METADATA_DISSEMINATION, MgmpConstants.RELEASABLE_TO);
         metacard.setAttribute(Security.METADATA_RELEASABILITY,
                 (Serializable) Arrays.asList("USA", "AUS"));
-        metacard.setAttribute(MgmpConstants.SECURITY_RESOURCE_DISSEMINATION, "Releasable to");
-        metacard.setAttribute(MgmpConstants.SECURITY_RESOURCE_RELEASABILITY,
+        metacard.setAttribute(Security.RESOURCE_DISSEMINATION, "Releasable to");
+        metacard.setAttribute(Security.RESOURCE_RELEASABILITY,
                 (Serializable) Arrays.asList("USA", "AUS"));
         metacard.setAttribute(Security.RESOURCE_CLASSIFICATION, "secret");
         metacard.setAttribute(Security.METADATA_CLASSIFICATION, "secret");
@@ -164,16 +175,35 @@ public class MgmpConverterTest {
         metacard.setAttribute(Isr.NATIONAL_IMAGERY_INTERPRETABILITY_RATING_SCALE, 2);
 
         mgmpConverter = new MgmpConverter();
+
+        mgmpConverter.setGmlIdSupplier(new Supplier<String>() {
+
+            private int index = 0;
+
+            private List<String> values =
+                    Arrays.asList("GMLID_69002c53-8110-4c7b-8966-c7d6560ac234",
+                            "GMLID_da6b4a59-3b6e-45a2-ae45-07ccb4346f71",
+                            "GMLID_5eff2dae-80df-4125-8450-f43a065bdfc5");
+
+            @Override
+            public String get() {
+                return values.get(index++);
+            }
+        });
     }
 
-    @Test
-    public void testSchemaCompliance() throws IOException, SAXException {
-
+    private String generateMgmpXml() {
         StringWriter stringWriter = new StringWriter();
         PrettyPrintWriter writer = new PrettyPrintWriter(stringWriter, new NoNameCoder());
         TreeMarshaller context = new TreeMarshaller(writer, null, null);
 
         mgmpConverter.marshal(metacard, writer, context);
+
+        return stringWriter.toString();
+    }
+
+    @Test
+    public void testSchemaCompliance() throws IOException, SAXException {
 
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schemaFactory.setResourceResolver(new LSResourceResolver() {
@@ -234,60 +264,63 @@ public class MgmpConverterTest {
                 schemaLocations.put(pair("http://www.w3.org/XML/1998/namespace", "xml.xsd"),
                         "/schemas/xml/2001/xml.xsd");
 
-                schemaLocations.put(pair(GML_NAMESPACE, "feature.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "feature.xsd"),
                         "/schemas/gml/3.2.1/feature.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "geometryAggregates.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "geometryAggregates.xsd"),
                         "/schemas/gml/3.2.1/geometryAggregates.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "geometryPrimitives.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "geometryPrimitives.xsd"),
                         "/schemas/gml/3.2.1/geometryPrimitives.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "geometryBasic2d.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "geometryBasic2d.xsd"),
                         "/schemas/gml/3.2.1/geometryBasic2d.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "geometryBasic0d1d.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "geometryBasic0d1d.xsd"),
                         "/schemas/gml/3.2.1/geometryBasic0d1d.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "measures.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "measures.xsd"),
                         "/schemas/gml/3.2.1/measures.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "units.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "units.xsd"),
                         "/schemas/gml/3.2.1/units.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "dictionary.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "dictionary.xsd"),
                         "/schemas/gml/3.2.1/dictionary.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "gmlBase.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "gmlBase.xsd"),
                         "/schemas/gml/3.2.1/gmlBase.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "gml.xsd"), "/schemas/gml/3.2.1/gml.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "dynamicFeature.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "gml.xsd"),
+                        "/schemas/gml/3.2.1/gml.xsd");
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "dynamicFeature.xsd"),
                         "/schemas/gml/3.2.1/dynamicFeature.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "temporal.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "temporal.xsd"),
                         "/schemas/gml/3.2.1/temporal.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "direction.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "direction.xsd"),
                         "/schemas/gml/3.2.1/direction.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "topology.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "topology.xsd"),
                         "/schemas/gml/3.2.1/topology.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "geometryComplexes.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "geometryComplexes.xsd"),
                         "/schemas/gml/3.2.1/geometryComplexes.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "coverage.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "coverage.xsd"),
                         "/schemas/gml/3.2.1/coverage.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "valueObjects.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "valueObjects.xsd"),
                         "/schemas/gml/3.2.1/valueObjects.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "grids.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "grids.xsd"),
                         "/schemas/gml/3.2.1/grids.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "coordinateReferenceSystems.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE,
+                        "coordinateReferenceSystems.xsd"),
                         "/schemas/gml/3.2.1/coordinateReferenceSystems.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "coordinateSystems.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "coordinateSystems.xsd"),
                         "/schemas/gml/3.2.1/coordinateSystems.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "referenceSystems.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "referenceSystems.xsd"),
                         "/schemas/gml/3.2.1/referenceSystems.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "datums.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "datums.xsd"),
                         "/schemas/gml/3.2.1/datums.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "coordinateOperations.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "coordinateOperations.xsd"),
                         "/schemas/gml/3.2.1/coordinateOperations.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "observation.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "observation.xsd"),
                         "/schemas/gml/3.2.1/observation.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "temporalReferenceSystems.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE,
+                        "temporalReferenceSystems.xsd"),
                         "/schemas/gml/3.2.1/temporalReferenceSystems.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "temporalTopology.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "temporalTopology.xsd"),
                         "/schemas/gml/3.2.1/temporalTopology.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "deprecatedTypes.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "deprecatedTypes.xsd"),
                         "/schemas/gml/3.2.1/deprecatedTypes.xsd");
-                schemaLocations.put(pair(GML_NAMESPACE, "basicTypes.xsd"),
+                schemaLocations.put(pair(MgmpConstants.GML_NAMESPACE, "basicTypes.xsd"),
                         "/schemas/gml/3.2.1/basicTypes.xsd");
 
                 schemaLocations.put(pair(GSS_NAMESPACE, "gss.xsd"),
@@ -348,11 +381,31 @@ public class MgmpConverterTest {
 
         try {
             schema.newValidator()
-                    .validate(new StreamSource(new StringReader(stringWriter.toString())));
+                    .validate(new StreamSource(new StringReader(generateMgmpXml())));
         } catch (SAXException | IOException e) {
             fail("Generated MGMPv2 Response does not conform to Schema: " + e.getMessage());
         }
 
+    }
+
+    /**
+     * Test that the generated xml matches the reference xml.
+     *
+     * @throws IOException
+     * @throws SAXException
+     */
+    @Test
+    public void testMarshal() throws IOException, SAXException {
+        String compareString = null;
+        try (InputStream input = getClass().getResourceAsStream("/xmldiff-reference-mgmp.xml")) {
+            compareString = IOUtils.toString(input);
+        }
+
+        String xml = generateMgmpXml();
+        Diff diff = new Diff(compareString, xml);
+
+        LOGGER.info("diff:\n" + diff.toString());
+        assertThat(diff.identical(), is(true));
     }
 
 }

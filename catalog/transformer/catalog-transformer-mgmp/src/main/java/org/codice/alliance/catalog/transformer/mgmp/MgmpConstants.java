@@ -277,15 +277,7 @@ public final class MgmpConstants {
     public static final String METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH =
             "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeList";
 
-    public static final String SECURITY_RESOURCE_DISSEMINATION =
-            "ext.security.resource-dissemination-controls";
-
-    public static final String GMD_POLYGON_GMLID = "GMLID_eea1bec0-9aaf-11e5-9cdf-0002a5d5c51b";
-
     public static final String GMD_POLYGON_SRSNAME = "http://www.opengis.net/def/crs/EPSG/0/4326";
-
-    public static final String SECURITY_RESOURCE_RELEASABILITY =
-            "ext.security.resource-releasability";
 
     public static final String GMD_NAMESPACE_PATH = "/MD_Metadata/@xmlns";
 

@@ -24,10 +24,12 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -111,6 +113,8 @@ public class MgmpConverter extends AbstractGmdConverter {
     private int geographicElementIndex = 1;
 
     private int dateElementIndex = 1;
+
+    private Supplier<String> gmlIdSupplier = this::generateGmlGuid;
 
     @Override
     protected List<String> getXstreamAliases() {
@@ -330,7 +334,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                                 .collect(Collectors.joining(" "));
 
                         pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_POLYGON_GMLID_PATH,
-                                geographicElementIndex)), MgmpConstants.GMD_POLYGON_GMLID);
+                                geographicElementIndex)), gmlIdSupplier.get());
                         pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_POLYGON_SRSNAME_PATH,
                                 geographicElementIndex)), MgmpConstants.GMD_POLYGON_SRSNAME);
 
@@ -426,6 +430,11 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     }
 
+    private String generateGmlGuid() {
+        return "GMLID_" + UUID.randomUUID()
+                .toString();
+    }
+
     private void addTemporalElements(XstreamPathValueTracker pathValueTracker,
             MetacardImpl metacard) {
 
@@ -442,12 +451,12 @@ public class MgmpConverter extends AbstractGmdConverter {
 
                 if (start.equals(end)) {
                     pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_TIME_INSTANT_ID_PATH,
-                            elementIndex)), "GMLID_c1dcde60-9aaf-11e5-a565-0002a5d5c51b");
+                            elementIndex)), gmlIdSupplier.get());
                     pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_INSTANT_PATH,
                             elementIndex)), start);
                 } else {
                     pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_TIME_PERIOD_ID_PATH,
-                            elementIndex)), "GMLID_b3bc8920-9aaf-11e5-967d-0002a5d5c51b");
+                            elementIndex)), gmlIdSupplier.get());
                     pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_START_PATH,
                             elementIndex)), start);
                     pathValueTracker.add(new Path(Utilities.replaceIndex(MgmpConstants.GMD_TEMPORAL_END_PATH,
@@ -759,10 +768,8 @@ public class MgmpConverter extends AbstractGmdConverter {
     private void addMdIdentificationResourceConstraintsCaveats(
             XstreamPathValueTracker pathValueTracker, MetacardImpl metacard) {
 
-        Attribute releasibilityAttribute =
-                metacard.getAttribute(MgmpConstants.SECURITY_RESOURCE_RELEASABILITY);
-        Attribute disseminationAttribute =
-                metacard.getAttribute(MgmpConstants.SECURITY_RESOURCE_DISSEMINATION);
+        Attribute releasibilityAttribute = metacard.getAttribute(Security.RESOURCE_RELEASABILITY);
+        Attribute disseminationAttribute = metacard.getAttribute(Security.RESOURCE_DISSEMINATION);
 
         if (isReleasabilityAndDisseminationSet(releasibilityAttribute, disseminationAttribute)) {
 
@@ -856,6 +863,10 @@ public class MgmpConverter extends AbstractGmdConverter {
                 metacard,
                 mc -> cloudCoverage,
                 MgmpConstants.CLOUD_COVERAGE_PATH);
+    }
+
+    public void setGmlIdSupplier(Supplier<String> gmlIdSupplier) {
+        this.gmlIdSupplier = gmlIdSupplier;
     }
 
     private static class Utilities {
