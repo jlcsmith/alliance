@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -106,7 +107,10 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private static final String ID_SEPARATOR = "-";
 
-    private Predicate<String> crsFilter = s -> s.matches("^[^:]+:[^:]+$");
+    private static final Pattern CRS_FILTER_PATTERN = Pattern.compile("^[^:]+:[^:]+$");
+
+    private Predicate<String> crsFilter = s -> CRS_FILTER_PATTERN.matcher(s)
+            .matches();
 
     private int geographicElementIndex = 1;
 
@@ -225,7 +229,8 @@ public class MgmpConverter extends AbstractGmdConverter {
                         "")
                 .collect(Collectors.toList());
 
-        List<String> languageCodeList = replace(languageCodes, MgmpConstants.LANGUAGE_CODE_LIST);
+        List<String> languageCodeList = createListOfStrings(languageCodes,
+                MgmpConstants.LANGUAGE_CODE_LIST);
 
         addMultiValues(languageCodeList, MgmpConstants.MD_IDENTIFICATION_LANGUAGE_CODE_LIST_PATH);
         addMultiValues(languageCodes,
@@ -372,7 +377,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         addMultiValues(getValues(Location.COUNTRY_CODE),
                 MgmpConstants.GMD_COUNTRY_CODE_PATH,
                 geographicElementIndex);
-        addMultiValues(replace(getValues(Location.COUNTRY_CODE), "ISO3166-1-a3"),
+        addMultiValues(createListOfStrings(getValues(Location.COUNTRY_CODE), "ISO3166-1-a3"),
                 MgmpConstants.GMD_COUNTRY_CODE_SPACE_PATH,
                 geographicElementIndex);
         geographicElementIndex += getValues(Location.COUNTRY_CODE).size();
@@ -506,9 +511,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         Optional<Date> modified = getOptionalDate(Core.METACARD_MODIFIED);
         Optional<Date> created = getOptionalDate(Core.METACARD_CREATED);
 
-        Optional<Date> date = modified.isPresent() ?
-                modified :
-                (created.isPresent() ? created : Optional.empty());
+        Optional<Date> date = modified.isPresent() ? modified : created;
 
         date.ifPresent(date1 -> pathValueTracker.add(new Path(GmdConstants.DATE_TIME_STAMP_PATH),
                 dateToIso8601(date1)));
@@ -647,7 +650,11 @@ public class MgmpConverter extends AbstractGmdConverter {
         if (isReleasabilityAndDisseminationSet(releasibilityAttribute, disseminationAttribute)) {
 
             String value = disseminationAttribute.getValue()
-                    .toString() + " " + join(releasibilityAttribute.getValues(), "/");
+                    .toString() + " " + String.join("/",
+                    releasibilityAttribute.getValues()
+                            .stream()
+                            .map(Objects::toString)
+                            .collect(Collectors.toList()));
 
             pathValueTracker.add(new Path(MgmpConstants.METADATA_RELEASABILITY_PATH), value);
 
@@ -659,9 +666,7 @@ public class MgmpConverter extends AbstractGmdConverter {
             Attribute disseminationAttribute) {
         return releasibilityAttribute != null && disseminationAttribute != null
                 && releasibilityAttribute.getValues() != null && !releasibilityAttribute.getValues()
-                .isEmpty() &&
-                disseminationAttribute.getValue() != null
-                && StringUtils.isNotBlank((String) disseminationAttribute.getValue());
+                .isEmpty() && StringUtils.isNotBlank((String) disseminationAttribute.getValue());
     }
 
     private void addMdIdentificationResourceConstraintsCaveats() {
@@ -672,7 +677,11 @@ public class MgmpConverter extends AbstractGmdConverter {
         if (isReleasabilityAndDisseminationSet(releasibilityAttribute, disseminationAttribute)) {
 
             String value = disseminationAttribute.getValue()
-                    .toString() + " " + join(releasibilityAttribute.getValues(), "/");
+                    .toString() + " " + String.join("/",
+                    releasibilityAttribute.getValues()
+                            .stream()
+                            .map(Objects::toString)
+                            .collect(Collectors.toList()));
 
             pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_RELEASABILITY_PATH),
                     value);
@@ -757,8 +766,12 @@ public class MgmpConverter extends AbstractGmdConverter {
         this.gmlIdSupplier = gmlIdSupplier;
     }
 
-    private List<String> replace(List<String> list, String replacement) {
-        return Collections.nCopies(list.size(), replacement);
+    /**
+     * Return a list of strings where the list contains {@code list.size()} elements
+     * with the string {@code value}.
+     */
+    private List<String> createListOfStrings(List<String> list, String value) {
+        return Collections.nCopies(list.size(), value);
     }
 
     private Optional<Date> getOptionalDate(String dateField) {
@@ -768,33 +781,18 @@ public class MgmpConverter extends AbstractGmdConverter {
                 .map(Date.class::cast);
     }
 
-    private <T> String join(List<T> values, String joiner) {
-        return values.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(joiner));
-    }
-
     private String replaceIndex(String template, int index) {
         return template.replace(MgmpConstants.INDEX_TAG, Integer.toString(index));
     }
 
     private List<Serializable> getSerializables(String attributeName) {
-
-        Attribute attribute = metacard.getAttribute(attributeName);
-
-        if (attribute == null) {
-            return Collections.emptyList();
-        }
-
-        List<Serializable> serializables = attribute.getValues();
-
-        if (serializables == null) {
-            return Collections.emptyList();
-        }
-
-        return serializables.stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return Optional.of(attributeName)
+                .map(metacard::getAttribute)
+                .map(Attribute::getValues)
+                .map(serializables -> serializables.stream()
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     private List<String> getValues(String attributeName) {
