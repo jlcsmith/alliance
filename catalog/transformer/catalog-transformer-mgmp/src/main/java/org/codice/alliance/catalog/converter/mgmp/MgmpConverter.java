@@ -830,7 +830,7 @@ public class MgmpConverter extends AbstractGmdConverter {
      */
     private boolean addFieldIfString(String attributeName, String xpath, Runnable extraAdd) {
         return addFieldIfString(() -> {
-            return Optional.of(metacard.getAttribute(attributeName))
+            return Optional.ofNullable(metacard.getAttribute(attributeName))
                     .map(Attribute::getValue)
                     .filter(String.class::isInstance)
                     .map(String.class::cast);
