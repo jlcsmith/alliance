@@ -224,9 +224,8 @@ public class MgmpConverter extends AbstractGmdConverter {
         }
 
         List<String> languageTexts = languageCodes.stream()
-                .map(code -> code.equals(Locale.ENGLISH.getISO3Language()) ?
-                        Locale.ENGLISH.getDisplayLanguage() :
-                        "")
+                .map(Locale::forLanguageTag)
+                .map(Locale::getDisplayLanguage)
                 .collect(Collectors.toList());
 
         List<String> languageCodeList = createListOfStrings(languageCodes,
@@ -594,7 +593,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     private void addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra() {
         pathValueTracker.add(new Path(MgmpConstants.ASSOCIATIONS_RELATED_CODE_SPACE_PATH),
-                "mediaReferenceNo");
+                "UUIDCollectiveProduct");
         pathValueTracker.add(new Path(MgmpConstants.ASSOCIATIONS_RELATED_TYPE_CODE_LIST_PATH),
                 MgmpConstants.MGMP_ASSOCIATION_TYPE_CODE);
         pathValueTracker.add(new Path(MgmpConstants.ASSOCIATIONS_RELATED_TYPE_CODE_LIST_VALUE_PATH),

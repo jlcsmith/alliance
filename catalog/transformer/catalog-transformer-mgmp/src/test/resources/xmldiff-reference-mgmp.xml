@@ -218,7 +218,7 @@
                 <gco:CharacterString>22407eee-8004-4d92-afed-cac07fff661c</gco:CharacterString>
               </code>
               <codeSpace>
-                <gco:CharacterString>mediaReferenceNo</gco:CharacterString>
+                <gco:CharacterString>UUIDCollectiveProduct</gco:CharacterString>
               </codeSpace>
             </RS_Identifier>
           </aggregateDataSetIdentifier>
@@ -231,10 +231,10 @@
         <LanguageCode codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode" codeListValue="eng">English</LanguageCode>
       </language>
       <language>
-        <LanguageCode codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode" codeListValue="fr"></LanguageCode>
+        <LanguageCode codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode" codeListValue="fr">French</LanguageCode>
       </language>
       <language>
-        <LanguageCode codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode" codeListValue="de"></LanguageCode>
+        <LanguageCode codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode" codeListValue="de">German</LanguageCode>
       </language>
       <topicCategory>
         <MD_TopicCategoryCode>farming</MD_TopicCategoryCode>
