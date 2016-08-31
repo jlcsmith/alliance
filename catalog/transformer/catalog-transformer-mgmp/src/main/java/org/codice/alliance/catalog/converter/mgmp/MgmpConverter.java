@@ -362,7 +362,7 @@ public class MgmpConverter extends AbstractGmdConverter {
                         }
 
                     } catch (ParseException e) {
-                        LOGGER.debug("unable to set location", e);
+                        LOGGER.debug("unable to set location: wkt={}", location, e);
                     }
                 });
 
