@@ -232,6 +232,13 @@
           </useLimitation>
         </MD_Constraints>
       </resourceConstraints>
+      <resourceConstraints>
+        <MD_LegalConstraints>
+          <otherConstraints>
+            <gco:CharacterString>No known Legal Constraints, please refer to Security Constraints.</gco:CharacterString>
+          </otherConstraints>
+        </MD_LegalConstraints>
+      </resourceConstraints>
       <aggregationInfo>
         <MD_AggregateInformation>
           <aggregateDataSetIdentifier>
