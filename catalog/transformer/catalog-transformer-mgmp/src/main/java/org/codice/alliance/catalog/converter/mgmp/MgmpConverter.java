@@ -14,7 +14,6 @@
 package org.codice.alliance.catalog.converter.mgmp;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -66,14 +65,6 @@ public class MgmpConverter extends AbstractGmdConverter {
     // TODO i don't know how to output ISR_DATA_QUALITY, maybe deleted as per code review comments
     @SuppressWarnings("unused")
     public static final String ISR_DATA_QUALITY = "ext.isr.data-quality";
-
-    // TODO i don't know how to get the data from metacard to output ISR_DATA_QUALITY, maybe deleted as per code review comments
-    @SuppressWarnings("unused")
-    public static final List<String> DATA_QUALITY_LIST = Arrays.asList(
-            "/MD_Metadata/dataQualityInfo/DQ_DataQuality/report/MGMP_UsabilityElement",
-            "/MD_Metadata/dataQualityInfo/DQ_DataQuality/report/DQ_GriddedDataPositionalAccuracy",
-            "/MD_Metadata/dataQualityInfo/DQ_DataQuality/report/DQ_RelativeInternalPositionalAccuracy",
-            "/MD_Metadata/dataQualityInfo/DQ_DataQuality/report/DQ_AbsoluteExternalPositionalAccuracy");
 
     private static final String BOUNDING_BOX_FORMAT = "%.15f";
 
@@ -131,13 +122,13 @@ public class MgmpConverter extends AbstractGmdConverter {
      * Builds up the xml paths and values to write.
      * Order matters!  Paths should be added in the order they must be written.
      *
-     * @param metacard the source
+     * @param sourceMetacard the source
      * @return XstreamPathValueTracker containing XML paths and values to write
      */
     @Override
-    protected XstreamPathValueTracker buildPaths(MetacardImpl metacard) {
+    protected XstreamPathValueTracker buildPaths(MetacardImpl sourceMetacard) {
 
-        this.metacard = metacard;
+        this.metacard = sourceMetacard;
         pathValueTracker = new XstreamPathValueTracker();
 
         addNamespaces();
@@ -202,10 +193,8 @@ public class MgmpConverter extends AbstractGmdConverter {
     private void addMdIdentificationResourceConstraintsOriginatorClassification() {
         addFieldIfString(Security.RESOURCE_ORIGINATOR_CLASSIFICATION,
                 MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_PATH,
-                () -> {
-                    pathValueTracker.add(new Path(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
-                            MgmpConstants.MGMP_CLASSIFICATION_CODE);
-                });
+                () -> pathValueTracker.add(new Path(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
+                        MgmpConstants.MGMP_CLASSIFICATION_CODE));
     }
 
     private void addMdIdentificationCitation() {
@@ -277,10 +266,8 @@ public class MgmpConverter extends AbstractGmdConverter {
 
         addFieldIfString(Security.METADATA_ORIGINATOR_CLASSIFICATION,
                 MgmpConstants.METADATA_ORIGINATOR_SECURITY_PATH,
-                () -> {
-                    pathValueTracker.add(new Path(MgmpConstants.METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH),
-                            MgmpConstants.CLASSIFICATION_CODE);
-                });
+                () -> pathValueTracker.add(new Path(MgmpConstants.METADATA_ORIGINATOR_CLASSIFICATION_CODE_LIST_PATH),
+                        MgmpConstants.CLASSIFICATION_CODE));
 
     }
 
@@ -300,6 +287,7 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     private void addBoundingPolygon() {
         getValues(Core.LOCATION).stream()
                 .findFirst()
@@ -349,13 +337,13 @@ public class MgmpConverter extends AbstractGmdConverter {
 
                         if (allSet) {
                             addBoundingBoxElement(MgmpConstants.WEST_BOUND_LONGITUDE_PATH,
-                                    westBoundLongitude);
+                                    westBoundLongitude.getAsDouble());
                             addBoundingBoxElement(MgmpConstants.EAST_BOUND_LONGITUDE_PATH,
-                                    eastBoundLongitude);
+                                    eastBoundLongitude.getAsDouble());
                             addBoundingBoxElement(MgmpConstants.SOUTH_BOUND_LATITUDE_PATH,
-                                    southBoundLatitude);
+                                    southBoundLatitude.getAsDouble());
                             addBoundingBoxElement(MgmpConstants.NORTH_BOUND_LATITUDE_PATH,
-                                    northBoundLatitude);
+                                    northBoundLatitude.getAsDouble());
 
                             geographicElementIndex++;
                         }
@@ -367,9 +355,9 @@ public class MgmpConverter extends AbstractGmdConverter {
 
     }
 
-    private void addBoundingBoxElement(String path, OptionalDouble optionalDouble) {
+    private void addBoundingBoxElement(String path, Double value) {
         pathValueTracker.add(new Path(replaceIndex(path, geographicElementIndex)),
-                String.format(BOUNDING_BOX_FORMAT, optionalDouble.getAsDouble()));
+                String.format(BOUNDING_BOX_FORMAT, value));
     }
 
     private void addGeographicIdentifier() {
@@ -383,10 +371,10 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addMdIdentificationStatus() {
-        addFieldIfString(GmdConstants.RESOURCE_STATUS, GmdConstants.RESOURCE_STATUS_PATH, () -> {
-            pathValueTracker.add(new Path(MgmpConstants.RESOURCE_STATUS_CODE_LIST_PATH),
-                    MgmpConstants.MGMP_PROGRESS_CODE);
-        });
+        addFieldIfString(GmdConstants.RESOURCE_STATUS,
+                GmdConstants.RESOURCE_STATUS_PATH,
+                () -> pathValueTracker.add(new Path(MgmpConstants.RESOURCE_STATUS_CODE_LIST_PATH),
+                        MgmpConstants.MGMP_PROGRESS_CODE));
     }
 
     private String generateGmlGuid() {
@@ -461,10 +449,10 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addCreatedDate() {
-        addFieldIfString(() -> {
-            return Optional.ofNullable(metacard.getCreatedDate())
-                    .map(this::dateToIso8601);
-        }, replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex), this::addCreatedDateExtra);
+        addFieldIfString(() -> Optional.ofNullable(metacard.getCreatedDate())
+                        .map(this::dateToIso8601),
+                replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex),
+                this::addCreatedDateExtra);
     }
 
     private void addCreatedDateExtra() {
@@ -473,10 +461,10 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addExpirationDate() {
-        addFieldIfString(() -> {
-            return Optional.ofNullable(metacard.getExpirationDate())
-                    .map(this::dateToIso8601);
-        }, replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex), this::addExpirationDateExtra);
+        addFieldIfString(() -> Optional.ofNullable(metacard.getExpirationDate())
+                        .map(this::dateToIso8601),
+                replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex),
+                this::addExpirationDateExtra);
     }
 
     private void addExpirationDateExtra() {
@@ -494,10 +482,10 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addModifiedDate() {
-        addFieldIfString(() -> {
-            return Optional.ofNullable(metacard.getModifiedDate())
-                    .map(this::dateToIso8601);
-        }, replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex), this::addModifiedDateExtra);
+        addFieldIfString(() -> Optional.ofNullable(metacard.getModifiedDate())
+                        .map(this::dateToIso8601),
+                replaceIndex(MgmpConstants.DATE_PATH, dateElementIndex),
+                this::addModifiedDateExtra);
     }
 
     private void addModifiedDateExtra() {
@@ -558,10 +546,7 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addGmdResourceUri() {
-        addFieldIfString(() -> {
-            return Optional.ofNullable(metacard.getResourceURI())
-                    .map(URI::toString);
-        }, GmdConstants.LINKAGE_URI_PATH);
+        addFieldIfString(Core.RESOURCE_DOWNLOAD_URL, GmdConstants.LINKAGE_URI_PATH);
     }
 
     private String formatId(String id) {
@@ -579,15 +564,13 @@ public class MgmpConverter extends AbstractGmdConverter {
     //@formatter:off
     private void addMdIdentificationAggregationInfoAggregateDataSetIdentifier() {
 
-        addFieldIfString(() -> {
-            return Optional.ofNullable(metacard.getAttribute(Associations.RELATED))
-                    .map(Attribute::getValue)
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .map(this::formatId);
-        },
-            GmdConstants.ASSOCIATION_PATH,
-            this::addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra);
+        addFieldIfString(() -> Optional.ofNullable(metacard.getAttribute(Associations.RELATED))
+                .map(Attribute::getValue)
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .map(this::formatId),
+                GmdConstants.ASSOCIATION_PATH,
+                this::addMdIdentificationAggregationInfoAggregateDataSetIdentifierExtra);
     }
     //@formatter:on
 
@@ -616,20 +599,20 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addMdIdentificationAbstract() {
-        addFieldIfString(Core.DESCRIPTION, GmdConstants.ABSTRACT_PATH);
+        addFieldIfString(() -> {
+            String description = metacard.getDescription();
+            return Optional.of(description != null ? description : "");
+        }, GmdConstants.ABSTRACT_PATH);
     }
 
     private void addGmdTitle() {
-        addFieldIfString(() -> {
-            return Optional.of(StringUtils.defaultString(metacard.getTitle()));
-        }, GmdConstants.TITLE_PATH);
+        addFieldIfString(() -> Optional.of(StringUtils.defaultString(metacard.getTitle())),
+                GmdConstants.TITLE_PATH);
     }
 
     private void addFileIdentifier() {
-        addFieldIfString(() -> {
-            return Optional.of(StringUtils.defaultString(metacard.getId()))
-                    .map(this::formatId);
-        }, GmdConstants.FILE_IDENTIFIER_PATH);
+        addFieldIfString(() -> Optional.of(StringUtils.defaultString(metacard.getId()))
+                .map(this::formatId), GmdConstants.FILE_IDENTIFIER_PATH);
     }
 
     private void addHierarchyLevel() {
@@ -691,19 +674,15 @@ public class MgmpConverter extends AbstractGmdConverter {
     private void addResourceSecurityClassification() {
         addFieldIfString(Security.RESOURCE_CLASSIFICATION,
                 MgmpConstants.RESOURCE_SECURITY_PATH,
-                () -> {
-                    pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_CODE_LIST_PATH),
-                            MgmpConstants.CLASSIFICATION_CODE);
-                });
+                () -> pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_CODE_LIST_PATH),
+                        MgmpConstants.CLASSIFICATION_CODE));
     }
 
     private void addMetadataSecurityClassification() {
         addFieldIfString(Security.METADATA_CLASSIFICATION,
                 MgmpConstants.METADATA_SECURITY_PATH,
-                () -> {
-                    pathValueTracker.add(new Path(MgmpConstants.METADATA_SECURITY_CODE_LIST_PATH),
-                            MgmpConstants.CLASSIFICATION_CODE);
-                });
+                () -> pathValueTracker.add(new Path(MgmpConstants.METADATA_SECURITY_CODE_LIST_PATH),
+                        MgmpConstants.CLASSIFICATION_CODE));
     }
 
     private void addImageDescription() {
@@ -761,7 +740,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         addFieldIfString(() -> cloudCoverage, MgmpConstants.CLOUD_COVERAGE_PATH);
     }
 
-    public void setGmlIdSupplier(Supplier<String> gmlIdSupplier) {
+    void setGmlIdSupplier(Supplier<String> gmlIdSupplier) {
         this.gmlIdSupplier = gmlIdSupplier;
     }
 
@@ -828,12 +807,10 @@ public class MgmpConverter extends AbstractGmdConverter {
      * @return true if the value was added, false otherwise
      */
     private boolean addFieldIfString(String attributeName, String xpath, Runnable extraAdd) {
-        return addFieldIfString(() -> {
-            return Optional.ofNullable(metacard.getAttribute(attributeName))
-                    .map(Attribute::getValue)
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast);
-        }, xpath, extraAdd);
+        return addFieldIfString(() -> Optional.ofNullable(metacard.getAttribute(attributeName))
+                .map(Attribute::getValue)
+                .filter(String.class::isInstance)
+                .map(String.class::cast), xpath, extraAdd);
     }
 
     private boolean addFieldIfString(String attributeName, String xpath) {

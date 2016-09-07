@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -79,13 +79,13 @@ import ddf.catalog.data.types.Topic;
 
 public class MgmpConverterTest {
 
-    public static final String GSS_NAMESPACE = "http://www.isotc211.org/2005/gss";
+    private static final String GSS_NAMESPACE = "http://www.isotc211.org/2005/gss";
 
-    public static final String GTS_NAMESPACE = "http://www.isotc211.org/2005/gts";
+    private static final String GTS_NAMESPACE = "http://www.isotc211.org/2005/gts";
 
-    public static final String GSR_NAMESPACE = "http://www.isotc211.org/2005/gsr";
+    private static final String GSR_NAMESPACE = "http://www.isotc211.org/2005/gsr";
 
-    public static final String SRV_NAMESPACE = "http://www.isotc211.org/2005/srv";
+    private static final String SRV_NAMESPACE = "http://www.isotc211.org/2005/srv";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MgmpConverterTest.class);
 
@@ -93,8 +93,10 @@ public class MgmpConverterTest {
 
     private MgmpConverter mgmpConverter;
 
+    private Schema schema;
+
     @Before
-    public void setup() {
+    public void setup() throws SAXException {
         MetacardType metacardType = new MetacardTypeImpl("foo",
                 Arrays.asList(new AssociationsAttributes(),
                         new ContactAttributes(),
@@ -135,7 +137,7 @@ public class MgmpConverterTest {
                 (Serializable) Arrays.asList("email1", "email2"));
         metacard.setAttribute(Contact.PUBLISHER_ADDRESS,
                 (Serializable) Arrays.asList("addr1", "addr2"));
-        metacard.setResourceURI(URI.create("http://127.0.0.1/foo/bar/index.html"));
+        metacard.setAttribute(Core.RESOURCE_DOWNLOAD_URL, "http://127.0.0.1/foo/bar/index.html");
         metacard.setAttribute(Associations.RELATED, "22407eee80044d92afedcac07fff661c");
         metacard.setAttribute(new AttributeImpl(Topic.CATEGORY,
                 Arrays.asList("farming", "biota", "boundaries")));
@@ -143,7 +145,6 @@ public class MgmpConverterTest {
                 Arrays.asList("keyword1", "keyword2", "keyword3")));
         metacard.setAttribute(Media.FORMAT, "format");
         metacard.setAttribute(Media.FORMAT_VERSION, "format-version");
-        metacard.setAttribute(Core.DESCRIPTION, "this is the description string");
         metacard.setTitle("theTitle");
         metacard.setContentTypeName("text/plain");
         metacard.setAttribute(Security.METADATA_DISSEMINATION, MgmpConstants.RELEASABLE_TO);
@@ -173,6 +174,7 @@ public class MgmpConverterTest {
                 (Serializable) Arrays.asList("point-of-contact-email-1",
                         "point-of-contact-email-2"));
         metacard.setAttribute(Isr.NATIONAL_IMAGERY_INTERPRETABILITY_RATING_SCALE, 2);
+        metacard.setAttribute(Core.DESCRIPTION, "this is the description string");
 
         mgmpConverter = new MgmpConverter();
 
@@ -190,20 +192,6 @@ public class MgmpConverterTest {
                 return values.get(index++);
             }
         });
-    }
-
-    private String generateMgmpXml() {
-        StringWriter stringWriter = new StringWriter();
-        PrettyPrintWriter writer = new PrettyPrintWriter(stringWriter, new NoNameCoder());
-        TreeMarshaller context = new TreeMarshaller(writer, null, null);
-
-        mgmpConverter.marshal(metacard, writer, context);
-
-        return stringWriter.toString();
-    }
-
-    @Test
-    public void testSchemaCompliance() throws IOException, SAXException {
 
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schemaFactory.setResourceResolver(new LSResourceResolver() {
@@ -377,26 +365,45 @@ public class MgmpConverterTest {
         Source mgmpSchemaSource = new StreamSource(getClass().getResourceAsStream(
                 "/schemas/mgmp.xsd"));
 
-        Schema schema = schemaFactory.newSchema(new Source[] {mgmpSchemaSource});
+        schema = schemaFactory.newSchema(new Source[] {mgmpSchemaSource});
+    }
 
+    private String generateMgmpXml() {
+        StringWriter stringWriter = new StringWriter();
+        PrettyPrintWriter writer = new PrettyPrintWriter(stringWriter, new NoNameCoder());
+        TreeMarshaller context = new TreeMarshaller(writer, null, null);
+
+        mgmpConverter.marshal(metacard, writer, context);
+
+        return stringWriter.toString();
+    }
+
+    private void validateXml(String xml) {
         try {
             schema.newValidator()
-                    .validate(new StreamSource(new StringReader(generateMgmpXml())));
+                    .validate(new StreamSource(new StringReader(xml)));
         } catch (SAXException | IOException e) {
             fail("Generated MGMPv2 Response does not conform to Schema: " + e.getMessage());
         }
+    }
 
+    @Test
+    public void testSchemaComplianceWithoutDescription() {
+        metacard.setAttribute(Core.DESCRIPTION, (Serializable) Collections.emptyList());
+        validateXml(generateMgmpXml());
+    }
+
+    @Test
+    public void testSchemaCompliance() {
+        validateXml(generateMgmpXml());
     }
 
     /**
      * Test that the generated xml matches the reference xml.
-     *
-     * @throws IOException
-     * @throws SAXException
      */
     @Test
     public void testMarshal() throws IOException, SAXException {
-        String compareString = null;
+        String compareString;
         try (InputStream input = getClass().getResourceAsStream("/xmldiff-reference-mgmp.xml")) {
             compareString = IOUtils.toString(input);
         }
