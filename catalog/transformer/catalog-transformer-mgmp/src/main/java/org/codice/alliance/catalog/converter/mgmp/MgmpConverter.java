@@ -601,7 +601,14 @@ public class MgmpConverter extends AbstractGmdConverter {
     }
 
     private void addMdIdentificationDescriptiveKeywords() {
-        addMultiValues(getValues(Topic.KEYWORD), MgmpConstants.GMD_KEYWORD_PATH);
+
+        List<String> keywords = getValues(Topic.KEYWORD);
+
+        if (!keywords.isEmpty()) {
+            addMultiValues(keywords, MgmpConstants.GMD_KEYWORD_PATH);
+        } else {
+            pathValueTracker.add(new Path(MgmpConstants.GMD_EMPTY_KEYWORDS_PATH), "");
+        }
     }
 
     private void addGmdMetacardFormat() {

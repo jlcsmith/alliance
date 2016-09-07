@@ -127,6 +127,8 @@ public final class MgmpConstants {
             "/MD_Metadata/identificationInfo/MD_DataIdentification/descriptiveKeywords/MD_Keywords/keyword["
                     + INDEX_TAG + "]/gco:CharacterString";
 
+    public static final String GMD_EMPTY_KEYWORDS_PATH = "/MD_Metadata/identificationInfo/MD_DataIdentification/descriptiveKeywords";
+
     public static final String GMD_COUNTRY_CODE_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/extent/EX_Extent/geographicElement["
                     + INDEX_TAG

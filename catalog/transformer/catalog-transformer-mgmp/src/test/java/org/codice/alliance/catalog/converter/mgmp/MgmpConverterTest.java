@@ -399,11 +399,32 @@ public class MgmpConverterTest {
     }
 
     @Test
-    public void testSchemaComplianceEmptyPointOfContact() {
+    public void testSchemaComplianceEmptyPublisher() {
         metacard.setAttribute(Contact.PUBLISHER_NAME, (Serializable) Collections.emptyList());
         metacard.setAttribute(Contact.PUBLISHER_PHONE, (Serializable) Collections.emptyList());
         metacard.setAttribute(Contact.PUBLISHER_ADDRESS, (Serializable) Collections.emptyList());
         metacard.setAttribute(Contact.PUBLISHER_EMAIL, (Serializable) Collections.emptyList());
+
+        validateXml(generateMgmpXml());
+    }
+
+    @Test
+    public void testSchemaComplianceEmptyPointOfContact() {
+        metacard.setAttribute(Contact.POINT_OF_CONTACT_NAME,
+                (Serializable) Collections.emptyList());
+        metacard.setAttribute(Contact.POINT_OF_CONTACT_PHONE,
+                (Serializable) Collections.emptyList());
+        metacard.setAttribute(Contact.POINT_OF_CONTACT_ADDRESS,
+                (Serializable) Collections.emptyList());
+        metacard.setAttribute(Contact.POINT_OF_CONTACT_EMAIL,
+                (Serializable) Collections.emptyList());
+
+        validateXml(generateMgmpXml());
+    }
+
+    @Test
+    public void testSchemaComplianceEmptyKeywords() {
+        metacard.setAttribute(Topic.KEYWORD, (Serializable) Collections.emptyList());
 
         validateXml(generateMgmpXml());
     }
