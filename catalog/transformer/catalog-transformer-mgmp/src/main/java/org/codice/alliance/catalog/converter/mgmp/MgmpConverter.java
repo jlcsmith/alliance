@@ -134,6 +134,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         addNamespaces();
 
         addFileIdentifier();
+        addLanguage();
         addCharacterSet();
         addHierarchyLevel();
         addContact();
@@ -202,6 +203,14 @@ public class MgmpConverter extends AbstractGmdConverter {
         addModifiedDate();
         addCreatedDate();
         addExpirationDate();
+        addMdIdentificationUUID();
+    }
+
+    private void addMdIdentificationUUID() {
+        pathValueTracker.add(new Path(MgmpConstants.DATA_IDENTIFICATION_RS_IDENTIFIER_CODE_PATH),
+                formatId(metacard.getId()));
+        pathValueTracker.add(new Path(MgmpConstants.DATA_IDENTIFICATION_RS_IDENTIFIER_CODE_SPACE_PATH),
+                "UUID");
     }
 
     private void addMdIdentificationLanguage() {
@@ -613,6 +622,29 @@ public class MgmpConverter extends AbstractGmdConverter {
     private void addFileIdentifier() {
         addFieldIfString(() -> Optional.of(StringUtils.defaultString(metacard.getId()))
                 .map(this::formatId), GmdConstants.FILE_IDENTIFIER_PATH);
+    }
+
+    private void addLanguage() {
+
+        Optional<String> metacardLanguage =
+                Optional.ofNullable(metacard.getAttribute(Core.LANGUAGE))
+                        .filter(String.class::isInstance)
+                        .map(String.class::cast)
+                        .map(String::toLowerCase);
+
+        String lang = metacardLanguage.orElse(Locale.getDefault()
+                .getISO3Language()
+                .toLowerCase());
+
+        String displayLanguage = metacardLanguage.map(s -> Locale.forLanguageTag(s)
+                .getDisplayLanguage())
+                .orElse(Locale.getDefault()
+                        .getDisplayLanguage());
+
+        pathValueTracker.add(new Path(MgmpConstants.LANGUAGE_CODE_LIST_PATH),
+                MgmpConstants.LANGUAGE_CODE_LIST);
+        pathValueTracker.add(new Path(MgmpConstants.LANGUAGE_CODE_LIST_VALUE_PATH), lang);
+        pathValueTracker.add(new Path(MgmpConstants.LANGUAGE_CODE_PATH), displayLanguage);
     }
 
     private void addHierarchyLevel() {

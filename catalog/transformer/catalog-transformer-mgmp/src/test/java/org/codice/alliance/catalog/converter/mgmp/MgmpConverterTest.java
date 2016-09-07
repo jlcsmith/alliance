@@ -398,6 +398,16 @@ public class MgmpConverterTest {
         validateXml(generateMgmpXml());
     }
 
+    @Test
+    public void testSchemaComplianceEmptyPointOfContact() {
+        metacard.setAttribute(Contact.PUBLISHER_NAME, (Serializable) Collections.emptyList());
+        metacard.setAttribute(Contact.PUBLISHER_PHONE, (Serializable) Collections.emptyList());
+        metacard.setAttribute(Contact.PUBLISHER_ADDRESS, (Serializable) Collections.emptyList());
+        metacard.setAttribute(Contact.PUBLISHER_EMAIL, (Serializable) Collections.emptyList());
+
+        validateXml(generateMgmpXml());
+    }
+
     /**
      * Test that the generated xml matches the reference xml.
      */

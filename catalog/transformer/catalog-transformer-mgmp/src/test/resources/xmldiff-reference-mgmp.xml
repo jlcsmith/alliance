@@ -16,6 +16,11 @@
   <fileIdentifier>
     <gco:CharacterString>22407eee-8004-4d92-afed-cac07fff661b</gco:CharacterString>
   </fileIdentifier>
+  <language>
+    <LanguageCode
+            codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_LanguageCode"
+            codeListValue="eng">English</LanguageCode>
+  </language>
   <characterSet>
     <MD_CharacterSetCode codeList="http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_CharacterSetCode" codeListValue="utf8">UTF-8</MD_CharacterSetCode>
   </characterSet>
@@ -136,6 +141,16 @@
               </dateType>
             </CI_Date>
           </date>
+          <identifier>
+            <RS_Identifier>
+              <code>
+                <gco:CharacterString>22407eee-8004-4d92-afed-cac07fff661b</gco:CharacterString>
+              </code>
+              <codeSpace>
+                <gco:CharacterString>UUID</gco:CharacterString>
+              </codeSpace>
+            </RS_Identifier>
+          </identifier>
         </CI_Citation>
       </citation>
       <abstract>

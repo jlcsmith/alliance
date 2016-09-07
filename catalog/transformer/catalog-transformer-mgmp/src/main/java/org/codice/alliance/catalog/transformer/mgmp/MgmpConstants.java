@@ -39,9 +39,11 @@ public final class MgmpConstants {
 
     public static final String ENCODING_DESCRIPTION = "UTF-8";
 
-    public static final String MGMP_PROGRESS_CODE = "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ProgressCode";
+    public static final String MGMP_PROGRESS_CODE =
+            "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_ProgressCode";
 
-    public static final String MGMP_DATE_TYPE_CODE = "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_DateTypeCode";
+    public static final String MGMP_DATE_TYPE_CODE =
+            "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_DateTypeCode";
 
     public static final String MGMP_ASSOCIATION_TYPE_CODE =
             "http://mod.uk/spatial/codelist/mgmp/2.0/MGMP_AssociationTypeCode";
@@ -158,6 +160,12 @@ public final class MgmpConstants {
     public static final String DATE_TYPE_CODE_TEXT_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date["
                     + INDEX_TAG + "]/CI_Date/dateType/CI_DateTypeCode";
+
+    public static final String DATA_IDENTIFICATION_RS_IDENTIFIER_CODE_PATH =
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/identifier/RS_Identifier/code/gco:CharacterString";
+
+    public static final String DATA_IDENTIFICATION_RS_IDENTIFIER_CODE_SPACE_PATH =
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/identifier/RS_Identifier/codeSpace/gco:CharacterString";
 
     public static final String POINT_OF_CONTACT_NAME_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/pointOfContact/CI_ResponsibleParty/organisationName["
@@ -393,6 +401,14 @@ public final class MgmpConstants {
 
     public static final String RESOURCE_SECURITY_RELEASABILITY_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:caveat/gco:CharacterString";
+
+    public static final String LANGUAGE_CODE_LIST_PATH =
+            "/MD_Metadata/language/LanguageCode/@codeList";
+
+    public static final String LANGUAGE_CODE_LIST_VALUE_PATH =
+            "/MD_Metadata/language/LanguageCode/@codeListValue";
+
+    public static final String LANGUAGE_CODE_PATH = "/MD_Metadata/language/LanguageCode";
 
     public static final List<String> DATA_QUALITY_LIST = Arrays.asList(
             "/MD_Metadata/dataQualityInfo/DQ_DataQuality/report/MGMP_UsabilityElement",
