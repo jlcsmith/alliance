@@ -123,6 +123,9 @@ public final class MgmpConstants {
             "/MD_Metadata/identificationInfo/MD_DataIdentification/topicCategory[" + INDEX_TAG
                     + "]/MD_TopicCategoryCode";
 
+    public static final String GMD_EMPTY_TOPIC_CATEGORY_PATH =
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/topicCategory";
+
     public static final String GMD_KEYWORD_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/descriptiveKeywords/MD_Keywords/keyword["
                     + INDEX_TAG + "]/gco:CharacterString";

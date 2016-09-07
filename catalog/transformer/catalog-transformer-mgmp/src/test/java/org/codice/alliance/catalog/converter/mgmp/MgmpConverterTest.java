@@ -429,6 +429,13 @@ public class MgmpConverterTest {
         validateXml(generateMgmpXml());
     }
 
+    @Test
+    public void testSchemaComplianceEmptyTopics() {
+        metacard.setAttribute(Topic.CATEGORY, (Serializable) Collections.emptyList());
+
+        validateXml(generateMgmpXml());
+    }
+
     /**
      * Test that the generated xml matches the reference xml.
      */
