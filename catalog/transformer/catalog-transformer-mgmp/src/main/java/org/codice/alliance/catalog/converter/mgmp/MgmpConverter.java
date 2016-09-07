@@ -189,12 +189,15 @@ public class MgmpConverter extends AbstractGmdConverter {
         addResourceSecurityClassification();
         addMdIdentificationResourceConstraintsOriginatorClassification();
         addMdIdentificationResourceConstraintsCaveats();
+        resourceContraintsIndex++;
+        addDefaultUseLimitations();
+        resourceContraintsIndex++;
     }
 
     private void addMdIdentificationResourceConstraintsOriginatorClassification() {
         addFieldIfString(Security.RESOURCE_ORIGINATOR_CLASSIFICATION,
-                MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_PATH,
-                () -> pathValueTracker.add(new Path(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH),
+                replaceIndex(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_PATH, resourceContraintsIndex),
+                () -> pathValueTracker.add(new Path(replaceIndex(MgmpConstants.RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH, resourceContraintsIndex)),
                         MgmpConstants.MGMP_CLASSIFICATION_CODE));
     }
 
@@ -673,6 +676,8 @@ public class MgmpConverter extends AbstractGmdConverter {
         return GmdConstants.GMD_LOCAL_NAME;
     }
 
+
+
     private void addMetadataReleasability() {
         Attribute releasibilityAttribute = metacard.getAttribute(Security.METADATA_RELEASABILITY);
         Attribute disseminationAttribute = metacard.getAttribute(Security.METADATA_DISSEMINATION);
@@ -699,6 +704,8 @@ public class MgmpConverter extends AbstractGmdConverter {
                 .isEmpty() && StringUtils.isNotBlank((String) disseminationAttribute.getValue());
     }
 
+    private int resourceContraintsIndex = 1;
+
     private void addMdIdentificationResourceConstraintsCaveats() {
 
         Attribute releasibilityAttribute = metacard.getAttribute(Security.RESOURCE_RELEASABILITY);
@@ -713,17 +720,24 @@ public class MgmpConverter extends AbstractGmdConverter {
                             .map(Objects::toString)
                             .collect(Collectors.toList()));
 
-            pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_RELEASABILITY_PATH),
+            pathValueTracker.add(new Path(replaceIndex(MgmpConstants.RESOURCE_SECURITY_RELEASABILITY_PATH, resourceContraintsIndex)),
                     value);
 
         }
     }
 
+    private void addDefaultUseLimitations() {
+
+        pathValueTracker.add(new Path(replaceIndex("/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints[" + MgmpConstants.INDEX_TAG + "]/MD_Constraints/useLimitation/gco:CharacterString", resourceContraintsIndex)), "No known limitations; see Legal and Security Constraints.");
+
+    }
+
     private void addResourceSecurityClassification() {
         addFieldIfString(Security.RESOURCE_CLASSIFICATION,
-                MgmpConstants.RESOURCE_SECURITY_PATH,
-                () -> pathValueTracker.add(new Path(MgmpConstants.RESOURCE_SECURITY_CODE_LIST_PATH),
+                replaceIndex(MgmpConstants.RESOURCE_SECURITY_PATH, resourceContraintsIndex),
+                () -> pathValueTracker.add(new Path(replaceIndex(MgmpConstants.RESOURCE_SECURITY_CODE_LIST_PATH, resourceContraintsIndex)),
                         MgmpConstants.CLASSIFICATION_CODE));
+
     }
 
     private void addMetadataSecurityClassification() {

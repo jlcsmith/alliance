@@ -259,10 +259,10 @@ public final class MgmpConstants {
             "/MD_Metadata/identificationInfo/MD_DataIdentification/pointOfContact/CI_ResponsibleParty/role/CI_RoleCode";
 
     public static final String RESOURCE_SECURITY_CODE_LIST_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeList";
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints[" + INDEX_TAG + "]/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeList";
 
     public static final String RESOURCE_ORIGINATOR_SECURITY_CODE_LIST_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeList";
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints[" + INDEX_TAG + "]/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeList";
 
     public static final String RESOURCE_STATUS_CODE_LIST_PATH =
             "/MD_Metadata/identificationInfo/MD_DataIdentification/status/MD_ProgressCode/@codeList";
@@ -399,13 +399,13 @@ public final class MgmpConstants {
             "/MD_Metadata/metadataConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeListValue";
 
     public static final String RESOURCE_SECURITY_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeListValue";
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints[" + INDEX_TAG + "]/mgmp:MGMP_SecurityConstraints/classification/MD_ClassificationCode/@codeListValue";
 
     public static final String RESOURCE_ORIGINATOR_SECURITY_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeListValue";
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints[" + INDEX_TAG + "]/mgmp:MGMP_SecurityConstraints/mgmp:originatorClassification/MD_ClassificationCode/@codeListValue";
 
     public static final String RESOURCE_SECURITY_RELEASABILITY_PATH =
-            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints/mgmp:MGMP_SecurityConstraints/mgmp:caveat/gco:CharacterString";
+            "/MD_Metadata/identificationInfo/MD_DataIdentification/resourceConstraints[" + INDEX_TAG + "]/mgmp:MGMP_SecurityConstraints/mgmp:caveat/gco:CharacterString";
 
     public static final String LANGUAGE_CODE_LIST_PATH =
             "/MD_Metadata/language/LanguageCode/@codeList";

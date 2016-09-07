@@ -225,6 +225,13 @@
           </mgmp:caveat>
         </mgmp:MGMP_SecurityConstraints>
       </resourceConstraints>
+      <resourceConstraints>
+        <MD_Constraints>
+          <useLimitation>
+            <gco:CharacterString>No known limitations; see Legal and Security Constraints.</gco:CharacterString>
+          </useLimitation>
+        </MD_Constraints>
+      </resourceConstraints>
       <aggregationInfo>
         <MD_AggregateInformation>
           <aggregateDataSetIdentifier>
