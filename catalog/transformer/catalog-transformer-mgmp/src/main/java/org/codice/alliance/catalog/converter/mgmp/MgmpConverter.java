@@ -509,6 +509,8 @@ public class MgmpConverter extends AbstractGmdConverter {
 
         Optional<Date> date = modified.isPresent() ? modified : created;
 
+        date = date.isPresent() ? date : Optional.of(new Date());
+
         date.ifPresent(date1 -> pathValueTracker.add(new Path(GmdConstants.DATE_TIME_STAMP_PATH),
                 dateToIso8601(date1)));
     }
