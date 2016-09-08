@@ -579,9 +579,7 @@ public class MgmpConverter extends AbstractGmdConverter {
         }
         return id;
     }
-    //@formatter:on
-
-    //@formatter:off
+    
     private void addMdIdentificationAggregationInfoAggregateDataSetIdentifier() {
 
         addFieldIfString(() -> Optional.ofNullable(metacard.getAttribute(Associations.RELATED))
