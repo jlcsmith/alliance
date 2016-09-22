@@ -35,6 +35,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codice.alliance.catalog.converter.mgmp.MgmpConverter;
 import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.catalog.core.api.types.Security;
 import org.codice.ddf.spatial.ogc.csw.catalog.common.GmdConstants;
@@ -83,7 +84,7 @@ public class MgmpTransformer extends GmdTransformer {
     private MetacardType mgmpMetacardType;
 
     public MgmpTransformer(MetacardType metacardType, AttributeRegistry attributeRegistry) {
-        super(metacardType);
+        super(metacardType, MgmpConverter::new);
         this.mgmpMetacardType = metacardType;
         this.attributeRegistry = attributeRegistry;
         registerResourceStatus();

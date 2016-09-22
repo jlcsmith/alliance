@@ -52,6 +52,7 @@
                 </list>
             </entry>
             <entry key="schema" value="http://www.isotc211.org/2005/gmd"/>
+
         </service-properties>
     </service>
 
@@ -61,4 +62,13 @@
             <reference interface="ddf.catalog.data.AttributeRegistry"/>
         </argument>
     </bean>
+
+    <service ref="mgmpTransformer" interface="ddf.catalog.transform.MetacardTransformer" ranking="10">
+        <service-properties>
+            <entry key="id" value="gmd:MD_Metadata"/>
+            <entry key="mime-type" value="text/xml"/>
+            <entry key="schema" value="http://www.isotc211.org/2005/gmd"/>
+        </service-properties>
+    </service>
+
 </blueprint>
