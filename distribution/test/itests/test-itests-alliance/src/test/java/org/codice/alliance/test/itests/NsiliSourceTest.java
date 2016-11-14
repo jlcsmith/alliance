@@ -13,20 +13,14 @@
  */
 package org.codice.alliance.test.itests;
 
-import static org.codice.ddf.itests.common.AbstractIntegrationTest.DynamicUrl.INSECURE_ROOT;
-import static org.codice.ddf.itests.common.csw.CswTestCommons.GMD_CSW_FEDERATED_SOURCE_FACTORY_PID;
-import static org.codice.ddf.itests.common.csw.CswTestCommons.getCswSourceProperties;
 import static org.codice.ddf.itests.common.opensearch.OpenSearchTestCommons.OPENSEARCH_FACTORY_PID;
 import static org.codice.ddf.itests.common.opensearch.OpenSearchTestCommons.getOpenSearchSourceProperties;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasXPath;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
 
 import java.io.IOException;
 import java.util.Dictionary;
@@ -39,7 +33,6 @@ import org.codice.alliance.test.itests.common.AbstractAllianceIntegrationTest;
 import org.codice.alliance.test.itests.common.mock.MockNsiliRunnable;
 import org.codice.ddf.itests.common.annotations.AfterExam;
 import org.codice.ddf.itests.common.annotations.BeforeExam;
-import org.codice.ddf.itests.common.csw.mock.FederatedCswMockServer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -50,29 +43,19 @@ import org.osgi.service.cm.Configuration;
 
 import com.jayway.restassured.response.ValidatableResponse;
 
-import ddf.catalog.data.types.Core;
-
 /**
  * Tests the Alliance additions to DDF framework components.
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public class FederationTest extends AbstractAllianceIntegrationTest {
-
-    private static final String CSW_STUB_SOURCE_ID = "cswStubServer";
+public class NsiliSourceTest extends AbstractAllianceIntegrationTest {
 
     private static final String[] REQUIRED_APPS =
-            {"catalog-app", "solr-app", "spatial-app", "nsili-app", "alliance-app"};
+            {"catalog-app", "solr-app", "spatial-app", "nsili-app"};
 
     private static final String HTTP_NSILI_SOURCE_ID = "httpNsiliSource";
 
     private static final String FTP_NSILI_SOURCE_ID = "ftpNsiliSource";
-
-    private static final String MGMP_SOURCE_ID = "mgmpSource";
-
-    private static final String RECORD_TITLE_1 = "myTitle";
-
-    private static final String MGMP_METACARD_TYPE = "mgmpMetacardType";
 
     private static final String CORBA_DEFAULT_PORT_PROPERTY =
             "org.codice.alliance.corba_default_port";
@@ -89,18 +72,8 @@ public class FederationTest extends AbstractAllianceIntegrationTest {
             "org.codice.alliance.corba_ftp_web_port",
             8);
 
-    private static final DynamicPort CSW_STUP_SERVER_PORT = new DynamicPort(
-            "org.codice.alliance.csw_stub_server_port",
-            9);
-
     private static final DynamicPort CORBA_PORT = new DynamicPort("org.codice.alliance.corba_port",
-            10);
-
-    private static final DynamicUrl CSW_STUB_SERVER_URL = new DynamicUrl(INSECURE_ROOT,
-            CSW_STUP_SERVER_PORT,
-            "/services/csw");
-
-    private FederatedCswMockServer mockMgmpServer;
+            9);
 
     private Thread mockServerThread;
 
@@ -127,7 +100,6 @@ public class FederationTest extends AbstractAllianceIntegrationTest {
             startMockResources();
             configureHttpNsiliSource();
             configureFtpNsiliSource();
-            configureMgmpSource();
 
             Map<String, Object> openSearchProperties = getOpenSearchSourceProperties(
                     OPENSEARCH_SOURCE_ID,
@@ -136,11 +108,9 @@ public class FederationTest extends AbstractAllianceIntegrationTest {
             getServiceManager().createManagedService(OPENSEARCH_FACTORY_PID, openSearchProperties);
 
             getCatalogBundle().waitForFederatedSource(OPENSEARCH_SOURCE_ID);
-            getCatalogBundle().waitForFederatedSource(MGMP_SOURCE_ID);
 
             getServiceManager().waitForSourcesToBeAvailable(REST_PATH.getUrl(),
-                    OPENSEARCH_SOURCE_ID,
-                    MGMP_SOURCE_ID);
+                    OPENSEARCH_SOURCE_ID);
         } catch (Exception e) {
             LOGGER.error("Failed in @BeforeExam: ", e);
             fail("Failed in @BeforeExam: " + e.getMessage());
@@ -243,47 +213,18 @@ public class FederationTest extends AbstractAllianceIntegrationTest {
                 .body("metacards.metacard.size()", equalTo(11));
     }
 
-    @Test
-    public void testMgmpCswOpenSearchGetAll() throws Exception {
-        String queryUrl = OPENSEARCH_PATH.getUrl() + "?q=*&format=xml&src=" + MGMP_SOURCE_ID;
-
-        // @formatter:off
-        when().get(queryUrl).then().log().all().assertThat().body(hasXPath(
-                "/metacards/metacard/string[@name='" + Core.TITLE + "']/value[text()='"
-                        + RECORD_TITLE_1 + "']"),
-                hasXPath("/metacards/metacard/geometry/value"),
-                hasXPath("/metacards/metacard/stringxml"),
-                /* Assert that the MGMP transformer takes precedence over the GMD transformer */
-                hasXPath("/metacards/metacard/type", is(MGMP_METACARD_TYPE)));
-        // @formatter:on
-    }
-
     @AfterExam
     public void afterAllianceTest() throws Exception {
         if (mockServerThread != null) {
             mockServerThread.interrupt();
         }
         mockServerThread = null;
-
-        if (mockMgmpServer != null) {
-            mockMgmpServer.stop();
-        }
     }
 
     private void startMockResources() throws Exception {
-        mockMgmpServer = new FederatedCswMockServer(CSW_STUB_SOURCE_ID,
-                INSECURE_ROOT,
-                Integer.parseInt(CSW_STUP_SERVER_PORT.getPort()));
-        mockMgmpServer.setupDefaultCapabilityResponseExpectation(getAllianceItestResource(
-                "mgmp-mock-capabilities-response.xml"));
-        mockMgmpServer.setupDefaultQueryResponseExpectation(getAllianceItestResource(
-                "mgmp-mock-query-response.xml"));
-        mockMgmpServer.start();
-
         MockNsiliRunnable mockServer =
-                new MockNsiliRunnable(Integer.parseInt(HTTP_WEB_PORT.getPort()),
-                        Integer.parseInt(FTP_WEB_PORT.getPort()),
-                        Integer.parseInt(CORBA_PORT.getPort()));
+                new MockNsiliRunnable(Integer.parseInt(HTTP_WEB_PORT.getPort()), Integer.parseInt(
+                        FTP_WEB_PORT.getPort()), Integer.parseInt(CORBA_PORT.getPort()));
 
         mockServerThread = new Thread(mockServer, "mockServer");
         mockServerThread.start();
@@ -310,16 +251,6 @@ public class FederationTest extends AbstractAllianceIntegrationTest {
 
         getServiceManager().createManagedService(NsiliSourceProperties.FACTORY_PID,
                 sourceProperties);
-    }
-
-    private void configureMgmpSource() throws IOException {
-        Map<String, Object> mgmpProperties = getCswSourceProperties(MGMP_SOURCE_ID,
-                GMD_CSW_FEDERATED_SOURCE_FACTORY_PID,
-                CSW_STUB_SERVER_URL.getUrl(),
-                getServiceManager());
-
-        getServiceManager().createManagedService(GMD_CSW_FEDERATED_SOURCE_FACTORY_PID,
-                mgmpProperties);
     }
 
     private void configureSecurityStsClient() throws IOException, InterruptedException {

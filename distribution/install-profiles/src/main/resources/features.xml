@@ -31,7 +31,6 @@
         <!-- Alliance Apps -->
         <feature>imaging-app</feature>
         <feature>security-app</feature>
-        <feature>alliance-app</feature>
     </feature>
 
     <feature name="profile-alliance-experimental" install="manual" version="${project.version}"

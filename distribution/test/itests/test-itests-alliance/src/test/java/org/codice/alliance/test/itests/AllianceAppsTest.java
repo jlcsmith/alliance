@@ -43,7 +43,7 @@ import ddf.security.Subject;
 public class AllianceAppsTest extends AbstractAllianceIntegrationTest {
 
     private static final String[] APPS =
-            {"security-app", "nsili-app", "imaging-app", "video-app", "alliance-app"};
+            {"security-app", "nsili-app", "imaging-app", "video-app"};
 
     @BeforeExam
     public void beforeAllianceTest() throws Exception {
