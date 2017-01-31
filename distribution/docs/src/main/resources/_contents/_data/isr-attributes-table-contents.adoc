@@ -1,5 +1,5 @@
 
-.[[_isr_attributes_table]]ISR: Attributes in this group relate to intelligence, search, and reconnaissance.
+.[[_isr_attributes_table]]ISR: Attributes in this group relate to Intelligence, Surveillance and Reconnaissance
 [cols="1,2,1,1,1" options="header"]
 |===
 |Term
@@ -33,13 +33,13 @@
 |
 
 |isr.original-source
-|A STANAG 4545 ISOURCE.
+|This field contains a description of the source of the data.  Refer to STANAG 4545 ISORCE.
 |String
 |ISOURCE per STANAG 4545
 |
 
 |isr.organizational-unit
-|An organizational unit.
+|The originating organization of the data.
 |String
 |< 1024 characters
 |
@@ -47,13 +47,13 @@
 |isr.niirs
 |The quality or detail level of an image. (National Imagery Interpretability Rating Scale)
 |Integer
-|1-9
+|0-9
 |
 
 |isr.nato-reporting-code
-|A reporting code as defined in STANAG 4545.
+|A reporting code as defined in STANAG 3596.  
 |String
-|One of the values in STANAG 4545
+|One of the values in STANAG 3596.  Refer to http://ncap.org.uk/feature/nato-target-reporting-categories.
 |
 
 |isr.mission-id
@@ -63,19 +63,19 @@
 |
 
 |isr.sensor-type
-|A STANAG 4545 sensor type.
-|STANAG 4545 ACFTB TRE
+|Identiifies which type of sensor produced the data.
 |String
+|STANAG 4545 ACFTB TRE
 |
 
 |isr.sensor-id
-|A STANAG 4545 sensor identifier.
+|Identifies which specific sensor produced the image.
 |String
 |STANAG 4545 ACFTB TRE
 |
 
 |isr.cloud-cover
-|An imagery cloud cover percentage.
+|Identifies the percentage of the image that is obscured by cloud.
 |Integer
 |0-100
 |
@@ -87,26 +87,26 @@
 |
 
 |isr.image-id
-|An ISR imagery identifier.
-|
-|
+|An alphanumeric identifier for the image.
+|String
+| 
 |
 
 |isr.comments
-|An ISR comment.
-|
+|A free text field for comments on the ISR data.
+|String
 |
 |
 
 |isr.jc3iedm-id
 |A command and control interoperability identifier.
-|
+|String
 |
 |
 
 |isr.platform-name
-|An ISR platform name.
-|
+|The name of the plafrom associated with the resource.
+|String
 |
 |
 

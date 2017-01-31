@@ -1,48 +1,83 @@
 
-====== NITF-specific Attributes Provided by ${cal-branding}
+====== Attributes Provided by ${cal-branding}
 
-${cal-branding} includes support for accessing additional metadata from specific file formats, primarily NITF. In addition to the above attributes, ${branding} can extract these attributes from NITF resources, if populated:
+${cal-branding} includes support for accessing additional metadata from ISR specific data formats. 
 
-.${cal-branding} Additional NITF Attributes
+.${cal-branding} supported data formats:
+* MPEG2/4 Video Transport Streams including MISB compliant KLV data
+* Image data formats - NITF 2.0,2.1 / NSIF (STANG 4545) 
+* Moving Target Indicator (MTI) (STANAG 4607)
+* STANAG 4559 - NSILI  
+ 
+.${cal-branding} Additional Attributes
 
-${branding} has the capability to extract many NITF-specific Attributes from NITF files. (available if populated)
+${branding} has the capability to extract ISR-specific metadata from supported file types:
 
-* General Attributes
-** `location`
-** `title`
-** `created`
-** `modified`
-** `effective`
+* Security Attributes
 ** `security.classification`
 ** `security.classification-system`
 ** `security.codewords`
 ** `security.dissemination-controls`
 ** `security.releasability`
-** `contact.creator-name`
-** `contact.creator-phone`
-** `isr.mission-id`
-** `isr.niirs`
+
+* General ISR Attributes
+
+** `isr.frequency-hertz`
+** `isr.target-id`
+** `isr.target-category-code`
 ** `isr.platform-id`
+** `isr.original-source`
+** `isr.organizational-unit`
+** `isr.niirs`
+** `isr.nato-reporting-code`
+** `isr.mission-id`
 ** `isr.sensor-type`
 ** `isr.sensor-id`
+** `isr.cloud-cover`
+** `isr.category`
+** `isr.image-id`
+** `isr.comments`
+** `isr.jc3iedm-id`
+** `isr.platform-name`
+** `isr.exploitation-level`
+** `isr.exploitation-auto-generated`
+** `isr.exploitation-subjective-quality-code`
+** `isr.vmti-processed`
+** `isr.report-serial-number`
+** `isr.report-type`
+** `isr.report-info-rating`
+** `isr.report-priority`
+** `isr.report-situation-type`
+** `isr.report-entity-type`
+** `isr.report-entity-name`
+** `isr.report-entity-alias`
+** `isr.rfi-for-action`
+** `isr.rfi-for-information`
+** `isr.rfi-serial-number`
+** `isr.rfi-status`
+** `isr.rfi-workflow-status`
+** `isr.task-comments`
+** `isr.task-status`
+** `isr.task-id`
+** `isr.cbrn-operation-name`
+** `isr.cbrn-incident-number`
+** `isr.cbrn-type`
+** `isr.cbrn-category`
+** `isr.cbrn-substance`
+** `isr.cbrn-alarm-classification`
+** `isr.tdl-activity`
+** `isr.tdl-message-number`
+** `isr.tdl-track-number`
+** `isr.video-mism-level`
+** `isr.dwell-location`
+** `isr.target-report-count`
+** `isr.mti-job-id`
+** `isr.tdl-platform-number`
 ** `isr.snow-cover`
 ** `isr.snow-depth-min-centimeters`
 ** `isr.snow-depth-max-centimeters`
-** `isr.organizational-unit`
-** `isr.cloud-cover`
-** `isr.target-report-count`
-** `isr.image-id`
-** `isr.original-source`
-** `isr.category`
-** `media.format`
-** `media.format-version`
-** `media.height-pixels`
-** `media.width-pixels`
-** `media.encoding`
-** `media.compression`
-** `datetime.start`
 
-* PIAIMC Attributes
+* NITF Profile For Imagery Access Image Support Extensions (PIAIMC) Extended Attributes
 ** `ext.nitf.piaimc.cloud-cvr`
 ** `ext.nitf.piaimc.standard-radiometric-product`
 ** `ext.nitf.piaimc.sensor-mode`
@@ -64,7 +99,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.piaimc.satellite-track-path`
 ** `ext.nitf.piaimc.satellite-track-row`
 
-* MTIRPB Attributes
+* NITF Moving Target Indiciator Report (MTIRPB) Extended Attributes
 ** `ext.nitf.mtirpb.target-classification-category`
 ** `ext.nitf.mtirpb.target-amplitude`
 ** `ext.nitf.mtirpb.target-heading`
@@ -86,7 +121,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.mtirpb.destination-point`
 ** `ext.nitf.mtirpb.squint-angle`
 
-* ACFTB Attributes
+* NITF Aircraft Information Extension (ACFTB) Extended Attributes
 ** `ext.nitf.acftb.aircraft-mission-id`
 ** `ext.nitf.acftb.aircraft-tail-number`
 ** `ext.nitf.acftb.aircraft-take-off`
@@ -99,7 +134,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.acftb.immediate-scene-request-id`
 ** `ext.nitf.acftb.mission-plan-mode`
 
-* CSEXRA Attributes
+* NITF Exploitation Reference Data (CSEXRA) Extended Attributes
 ** `ext.nitf.csexra.snow-cover`
 ** `ext.nitf.csexra.predicted-niirs`
 ** `ext.nitf.csexra.snow-depth-min`
@@ -127,14 +162,14 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.csexra.circular-error`
 ** `ext.nitf.csexra.linear-error`
 
-* HISTOA Attributes
+* NITF Softcopy History (HISTOA) Extended Attributes
 ** `ext.nitf.histoa.system-type`
 ** `ext.nitf.histoa.prior-compression`
 ** `ext.nitf.histoa.prior-enhancements`
 ** `ext.nitf.histoa.system-specific-remap`
 ** `ext.nitf.histoa.data-mapping-id`
 
-* AIMIDB Attributes
+* NITF Airborne Image Identification (AIMIDB) Extended Attributes
 ** `ext.nitf.aimidb.acquisition-date`
 ** `ext.nitf.aimidb.mission-number`
 ** `ext.nitf.aimidb.mission-identification`
@@ -151,7 +186,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.aimidb.country-code`
 ** `ext.nitf.aimidb.location`
 
-* Header Attributes
+* NITF Header Extended Attributes
 ** `ext.nitf.file-profile-name`
 ** `ext.nitf.file-version`
 ** `ext.nitf.complexity-level`
@@ -181,7 +216,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.originators-name`
 ** `ext.nitf.originators-phone-number`
 
-* Image Attributes
+* NITF Image Segment Extended Attributes
 ** `ext.nitf.image.file-part-type`
 ** `ext.nitf.image.image-identifier-1`
 ** `ext.nitf.image.image-date-and-time`
@@ -229,7 +264,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.image.image-location`
 ** `ext.nitf.image.image-magnification`
 
-* Graphic Attributes
+* NITF Graphic Segment Extended Attributes
 ** `ext.nitf.graphic.file-part-type`
 ** `ext.nitf.graphic.graphic-identifier`
 ** `ext.nitf.graphic.graphic-name`
@@ -255,7 +290,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.graphic.graphic-color`
 ** `ext.nitf.graphic.graphic-extended-subheader-data-length`
 
-* Label Attributes
+* NITF Label Segment Extended Attributes
 ** `ext.nitf.label.file-part-type`
 ** `ext.nitf.label.label-id`
 ** `ext.nitf.label.label-security-classification`
@@ -275,7 +310,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.label.label-background-color`
 ** `ext.nitf.label.extended-subheader-data-length`
 
-* SymbolAttributes
+* NITF Symbol Segment Extended Attributes
 ** `ext.nitf.symbol.file-part-type`
 ** `ext.nitf.symbol.symbol-id`
 ** `ext.nitf.symbol.symbol-name`
@@ -301,7 +336,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.symbol.symbol-rotation`
 ** `ext.nitf.symbol.extended-subheader-data-length`
 
-* Text Attributes
+* NITF Text Segment Extended Attributes
 ** `ext.nitf.text.file-part-type`
 ** `ext.nitf.text.text-identifier`
 ** `ext.nitf.text.text-attachment-level`
@@ -326,7 +361,7 @@ ${branding} has the capability to extract many NITF-specific Attributes from NIT
 ** `ext.nitf.text.text-format`
 ** `ext.nitf.text.text-extended-subheader-data-length`
 
-* CSDIDA Attributes
+* NITF Dataset Identification (CSDIDA) Extended Attributes
 ** `ext.nitf.csdida.platform-code-vehicle-id`
 ** `ext.nitf.csdida.day-dataset-collection`
 ** `ext.nitf.csdida.month-dataset-collection`
