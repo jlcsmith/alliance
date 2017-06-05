@@ -28,6 +28,7 @@ import org.codice.alliance.catalog.core.api.types.Isr;
 import org.codice.alliance.catalog.core.api.types.Security;
 import org.codice.alliance.transformer.nitf.ExtNitfUtility;
 import org.codice.imaging.nitf.core.common.DateTime;
+import org.codice.imaging.nitf.core.common.FileType;
 import org.codice.imaging.nitf.core.header.NitfHeader;
 
 import ddf.catalog.data.AttributeDescriptor;
@@ -114,6 +115,17 @@ public class NitfHeaderAttribute extends NitfAttributeImpl<NitfHeader> {
 
     public static final String FILE_BACKGROUND_COLOR = PREFIX + "file-background-color";
 
+    public static final String NITF = "NITF";
+
+    public static final String NSIF = "NSIF";
+
+    public static final String TWO_ONE = "2.1";
+
+    public static final String TWO_ZERO = "2.0";
+
+    public static final String ONE_ZERO = "1.0";
+
+
     private static final List<NitfAttribute<NitfHeader>> ATTRIBUTES  = new LinkedList<>();
 
     /*
@@ -124,17 +136,15 @@ public class NitfHeaderAttribute extends NitfAttributeImpl<NitfHeader> {
     public static final NitfHeaderAttribute FILE_PROFILE_NAME_ATTRIBUTE =
             new NitfHeaderAttribute(Media.FORMAT,
                     "FHDR",
-                    header -> header.getFileType()
-                            .name(),
+                    header -> convertFormat(header.getFileType()),
                     new MediaAttributes().getAttributeDescriptor(Media.FORMAT),
                     FILE_PROFILE_NAME);
 
     public static final NitfHeaderAttribute FILE_VERSION_ATTRIBUTE =
             new NitfHeaderAttribute(Media.FORMAT_VERSION,
                     "FVER",
-                    header -> header.getFileType()
-                            .name(),
-                    new MediaAttributes().getAttributeDescriptor(Media.FORMAT),
+                    header -> convertFormatVersion(header.getFileType()),
+                    new MediaAttributes().getAttributeDescriptor(Media.FORMAT_VERSION),
                     FILE_VERSION);
 
     public static final NitfHeaderAttribute ORIGINATING_STATION_ID_ATTRIBUTE =
@@ -357,6 +367,28 @@ public class NitfHeaderAttribute extends NitfAttributeImpl<NitfHeader> {
             AttributeDescriptor attributeDescriptor, String extNitfName) {
         super(longName, shortName, accessorFunction, attributeDescriptor, extNitfName);
         ATTRIBUTES.add(this);
+    }
+
+    private static String convertFormat(final FileType format) {
+        if (format == FileType.NITF_TWO_ONE || format == FileType.NITF_TWO_ZERO) {
+            return NITF;
+        } else if (format == FileType.NSIF_ONE_ZERO) {
+            return NSIF;
+        }
+
+        return NITF;
+    }
+
+    private static String convertFormatVersion(final FileType format) {
+        if (format == FileType.NITF_TWO_ONE) {
+            return TWO_ONE;
+        } else if (format == FileType.NITF_TWO_ZERO) {
+            return TWO_ZERO;
+        } else if (format == FileType.NSIF_ONE_ZERO) {
+            return ONE_ZERO;
+        }
+
+        return "";
     }
 
     private static Date convertNitfDate(DateTime nitfDateTime) {

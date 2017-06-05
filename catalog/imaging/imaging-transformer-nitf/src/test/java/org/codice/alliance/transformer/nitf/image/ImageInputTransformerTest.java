@@ -655,8 +655,8 @@ public class ImageInputTransformerTest {
     private static Map<NitfAttribute, Object> initAttributesToBeAsserted() {
         //key value pair of attributes and expected getAttributes
         Map<NitfAttribute, Object> map = new HashMap<>();
-        map.put(NitfHeaderAttribute.FILE_PROFILE_NAME_ATTRIBUTE, "NITF_TWO_ONE");
-        map.put(NitfHeaderAttribute.FILE_VERSION_ATTRIBUTE, "NITF_TWO_ONE");
+        map.put(NitfHeaderAttribute.FILE_PROFILE_NAME_ATTRIBUTE, "NITF");
+        map.put(NitfHeaderAttribute.FILE_VERSION_ATTRIBUTE, "2.1");
         map.put(NitfHeaderAttribute.COMPLEXITY_LEVEL_ATTRIBUTE, 3);
         map.put(NitfHeaderAttribute.STANDARD_TYPE_ATTRIBUTE, "BF01");
         map.put(NitfHeaderAttribute.ORIGINATING_STATION_ID_ATTRIBUTE, "i_3001a");
