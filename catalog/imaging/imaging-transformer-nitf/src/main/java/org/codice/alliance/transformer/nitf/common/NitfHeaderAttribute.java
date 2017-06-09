@@ -376,7 +376,7 @@ public class NitfHeaderAttribute extends NitfAttributeImpl<NitfHeader> {
             return NSIF;
         }
 
-        return NITF;
+        return "";
     }
 
     private static String convertFormatVersion(final FileType format) {
