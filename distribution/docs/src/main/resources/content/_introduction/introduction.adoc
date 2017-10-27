@@ -15,3 +15,5 @@ ${cal-branding} includes support for these features:
 ** Ingest and catalog NITF 2.1 imagery and build data-rich metacards for discovery and retrieval.
 * STANAG 4609 KLV support.
 ** Ingest FMV clips and extract KLV metadata for metacard creation.
+* MGMP Ingest and Export
+** Ingest and export MGMPv2 compliant XML records.  Supports MGMPv2 metadata format in the ${branding} http://www.opengeospatial.org/standards/cat[CSW] Endpoint and Federated Source.

@@ -109,6 +109,7 @@
         <alliance-imaging>Imaging</alliance-imaging>
         <alliance-nsili>NSILI</alliance-nsili>
         <alliance-video>Video</alliance-video>
+        <alliance-mgmp>MGMPv2</alliance-mgmp>
         <alliance-security>IC Security</alliance-security>
         <commons-configuration.version>1.10</commons-configuration.version>
         <javax-mail.version>1.4.4</javax-mail.version>

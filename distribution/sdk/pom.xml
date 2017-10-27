@@ -36,6 +36,7 @@
         <module>sample-nsili-client</module>
         <module>sdk-app</module>
         <module>sample-content-metadata-extractor</module>
+        <module>sample-mgmp-server</module>
     </modules>
     <build>
         <plugins>

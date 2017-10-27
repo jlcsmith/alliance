@@ -1,0 +1,26 @@
+:title: MGMPv2 Input Transformer
+:type: transformer
+:subtype: input
+:status: published
+:link: _mgmp_input_transformer
+:summary: Converts MGMPv2 compliant XML records into metacards
+
+The MGMPv2 Input Transformer converts  MGMPv2 compliant XML records into metacards for ingest into ${branding}.
+
+===== Installing the MGMPv2 Input Transformer
+
+The MGMPv2 Input Transformer is installed by default with a standard installation as part of the ${alliance-mgmp} application.
+
+===== Configuring the MGMPv2 Input Transformer
+
+To configure the MGMPv2 Input Transformer:
+
+. Navigate to the *${admin-console}*.
+. Select the *${alliance-mgmp}* application.
+. Select the *Configuration* tab.
+. Select the *${alliance-mgmp} Transformer Configuration*.
+
+These are the configurable properties:
+
+See <<org.codice.alliance.catalog.mgmp.MgmpConfiguration,MGMPv2 Transformer configurations>> for all possible configurations.
+'''

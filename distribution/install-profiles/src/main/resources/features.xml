@@ -31,6 +31,9 @@
         <!-- Alliance Apps -->
         <feature>imaging-app</feature>
         <feature>security-app</feature>
+        <feature>video-app</feature>
+        <feature>nsili-app</feature>
+        <feature>mgmp-app</feature>
     </feature>
 
     <feature name="profile-alliance-experimental" install="manual" version="${project.version}"
@@ -49,6 +52,8 @@
         <feature>imaging-app</feature>
         <feature>security-app</feature>
         <feature>video-app</feature>
+        <feature>nsili-app</feature>
+        <feature>mgmp-app</feature>
 
         <!-- Experimental Apps-->
         <feature>resourcemanagement-app</feature>

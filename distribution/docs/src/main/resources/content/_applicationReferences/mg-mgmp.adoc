@@ -1,0 +1,21 @@
+:title: ${alliance-mgmp}
+:status: published
+:type: applicationReference
+:summary: Provides support for importing, exporting and searching for MGMP products.
+:order: 24
+
+The ${alliance-mgmp} Application provides support for ingesting and searching for MGMP products.
+
+==== ${alliance-mgmp} Application Prerequisites
+
+Before the ${alliance-mgmp} Application can be installed:
+
+* the ${ddf-platform} Application
+* the ${ddf-catalog} Application
+* the ${ddf-spatial} Application
+
+==== Installing ${alliance-mgmp} Application
+
+The ${alliance-mgmp} application is installed by default on a standard installation.
+
+

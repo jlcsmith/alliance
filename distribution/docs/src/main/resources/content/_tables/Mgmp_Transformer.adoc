@@ -1,0 +1,38 @@
+:title: MGMPv2 Transformer
+:id: org.codice.alliance.catalog.mgmp.MgmpConfiguration
+:type: table
+:status: published
+:application: ${alliance-mgmp}
+:summary: MGMPv2 Transformer configurations.
+
+.[[org.codice.alliance.catalog.mgmp.MgmpConfiguration]]MGMPv2 Transformer
+[cols="1,1m,1,3,1,1" options="header"]
+|===
+
+|Name
+|Id
+|Type
+|Description
+|Default Value
+|Required
+
+|Security Mappings
+|securityMappingList
+|String
+|Security classification mappings for MGMP ingest
+|official=OFFICIAL,
+
+officialSensitive=OFFICIAL-SENSITIVE,
+
+secret=SECRET
+
+|true
+
+|Source System Name
+|sourceSystemName
+|String
+|The source system name to use in the generated MGMP XML.  If not specified, the system's source id will be used
+|
+|false
+
+|===

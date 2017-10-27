@@ -152,6 +152,13 @@
             <type>xml</type>
         </dependency>
         <dependency>
+            <groupId>org.codice.alliance.mgmp</groupId>
+            <artifactId>mgmp-app</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>org.codice.alliance.distribution</groupId>
             <artifactId>alliance-branding-app</artifactId>
             <version>${project.version}</version>
@@ -281,6 +288,9 @@
                                 </descriptor>
                                 <descriptor>
                                     mvn:org.codice.alliance.video/video-app/${project.version}/xml/features
+                                </descriptor>
+                                <descriptor>
+                                    mvn:org.codice.alliance.mgmp/mgmp-app/${project.version}/xml/features
                                 </descriptor>
                                 <descriptor>
                                     mvn:org.codice.alliance.distribution/alliance-branding-app/${project.version}/xml/features

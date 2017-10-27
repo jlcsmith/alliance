@@ -1,0 +1,26 @@
+:title: MGMPv2 Metacard Transformer
+:type: transformer
+:subtype: input
+:status: published
+:link: _mgmp_metacard_transformer
+:summary: Converts metacards to MGMPv2 compliant XML records
+
+The MGMPv2 Metacard Transformer converts metacards into MGMPv2 compliant XML records per the UK MoD MGMPv2 standard.
+
+===== Installing the MGMPv2 Metacard Transformer
+
+The MGMPv2 Metacard Transformer is installed by default with a standard installation in the ${alliance-mgmp} application.
+
+===== Configuring the MGMPv2 Metacard Transformer
+
+To configure the MGMPv2 Metacard Transformer:
+
+. Navigate to the *${admin-console}*.
+. Select the *${alliance-mgmp}* application.
+. Select the *Configuration* tab.
+. Select the *${alliance-mgmp} Transformer Configuration*.
+
+These are the configurable properties:
+
+See <<org.codice.alliance.catalog.mgmp.MgmpConfiguration,MGMPv2 Transformer configurations>> for all possible configurations.
+'''

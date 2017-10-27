@@ -8,3 +8,5 @@ ${alliance-imaging} Application:: Provides support for ingesting and searching f
 ${alliance-nsili} Application:: Provides a bidirectional interface to STANAG-4559 Edition 3 compliant systems.
 
 ${alliance-video} Application:: Provides support for ingesting and searching for MPEG-TS products.
+
+${alliance-mgmp} Application:: Provides support for the MGMPv2 metadata format.
