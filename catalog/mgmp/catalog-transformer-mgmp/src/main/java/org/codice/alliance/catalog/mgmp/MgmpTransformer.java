@@ -509,7 +509,7 @@ public class MgmpTransformer extends GmdTransformer {
       domFactory.setNamespaceAware(false);
       try {
         domFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        domFactory.setFeature("http://xml.org/sax/features/external-general-entitie", false);
+        domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         domFactory.setFeature(
             "http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
