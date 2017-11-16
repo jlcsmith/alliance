@@ -124,5 +124,4 @@ public class MgmpTest extends AbstractAllianceIntegrationTest {
       mockMgmpServer.stop();
     }
   }
-
 }
