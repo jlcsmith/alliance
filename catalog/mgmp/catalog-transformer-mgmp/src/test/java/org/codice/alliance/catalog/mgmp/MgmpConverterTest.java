@@ -14,7 +14,7 @@
 package org.codice.alliance.catalog.mgmp;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import com.sun.org.apache.xerces.internal.dom.DOMInputImpl;
@@ -539,7 +539,6 @@ public class MgmpConverterTest {
         Security.RESOURCE_ORIGINATOR_CLASSIFICATION, "security-resource-originator-classification");
     testMetacard1.setAttribute(
         Security.METADATA_ORIGINATOR_CLASSIFICATION, "security-metadata-originator-classification");
-    //  testMetacard1.setAttribute(MgmpConstants.ITEM_STATUS, "Work In Progress");
   }
 
   private void generateTestMetacard2() {
@@ -548,7 +547,6 @@ public class MgmpConverterTest {
     testMetacard2.setAttribute(Security.CLASSIFICATION, "UNCLASSIFIED");
     testMetacard2.setAttribute(Security.METADATA_ORIGINATOR_CLASSIFICATION, "invalid");
     testMetacard2.setAttribute(Security.RESOURCE_ORIGINATOR_CLASSIFICATION, "UNCLASSIFIED");
-    // testMetacard2.setAttribute(MgmpConstants.ITEM_STATUS, "Published");
   }
 
   private void generateTestMetacard3() {
