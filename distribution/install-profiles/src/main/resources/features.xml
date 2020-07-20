@@ -29,31 +29,9 @@
         <feature>catalog-solr-app</feature>
 
         <!-- Alliance Apps -->
-        <feature>imaging-app</feature>
-        <feature>security-app</feature>
-    </feature>
-
-    <feature name="profile-alliance-experimental" version="${project.version}"
-             description="This will install experimental applications along with the standard Alliance applications." start-level="2">
-
-        <!-- DDF features -->
-        <feature>admin-app</feature>
-        <feature>platform-app</feature>
-        <feature>catalog-app</feature>
-        <feature>spatial-app</feature>
-        <feature>security-services-app</feature>
-        <feature>search-ui-app</feature>
-        <feature>catalog-solr-app</feature>
-
-        <!-- Alliance Apps -->
-        <feature>imaging-app</feature>
-        <feature>security-app</feature>
         <feature>video-app</feature>
-
-        <!-- Experimental Apps-->
-        <feature>resourcemanagement-app</feature>
-        <feature>geowebcache-app</feature>
-        <feature>broker-app</feature>
+        <feature>imaging-app</feature>
+        <feature>security-app</feature>
     </feature>
 
 </features>
