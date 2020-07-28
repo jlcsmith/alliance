@@ -28,7 +28,7 @@ To configure Alliance Video to receive video streams, browse to the Admin UI / V
 Admins can configure multiple endpoints to receive data via UDP.  Note that the stream configuration has several properties, but the defaults can be used.
 ![FMV Stream Configuration] (FMV-stream-config.png)
 
-Once a stream is configured, use hte "play" button to have Alliance start listening on the UDP endpoint configured
+Once a stream is configured, use the "play" button to have Alliance start listening on the UDP endpoint configured
 ![FMV Stream Control] (FMV-stream-control.png)
 
 ## Streaming data to Alliance
